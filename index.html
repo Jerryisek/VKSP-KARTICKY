@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="cs" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektrické stroje v energetice – Studijní Flashcards (VŠB-TUO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
+
+    <!-- Top Navigation & Stats Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 font-bold text-xl">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-white">Elektrické stroje a přístroje (VŠB-TUO)</h1>
+                    <p class="text-xs text-slate-400">195 Otázek + 13 Příkladů (Stroje) + 34 Testových otázek z fotek + Přístroje (100% dle skript)</p>
+                </div>
+            </div>
+
+            <!-- Global Progress Bar -->
+            <div class="flex-1 max-w-md mx-4 hidden md:block">
+                <div class="flex justify-between text-xs mb-1 font-medium">
+                    <span class="text-emerald-400" id="stat-known-text">Umím: 0</span>
+                    <span class="text-amber-400" id="stat-learning-text">Neumím: 0</span>
+                    <span class="text-slate-400" id="stat-unseen-text">Neprojité: 262</span>
+                </div>
+                <div class="h-2.5 w-full bg-slate-800 rounded-full overflow-hidden flex">
+                    <div id="bar-known" class="bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                    <div id="bar-learning" class="bg-amber-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <button onclick="activateExamPhotosDeck()" id="top-exam-btn" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-lg shadow-rose-600/25 flex items-center gap-1.5 transition">
+                    <span>📸</span> Jen otázky z fotek (34)
+                </button>
+                <button onclick="openSyncModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition">
+                    <span>💾</span> GitHub / Záloha
+                </button>
+                <button onclick="openFormulaModal()" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-medium border border-indigo-500/30 flex items-center gap-1.5 transition">
+                    <span>📐</span> Tahák vzorců
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="max-w-7xl mx-auto w-full flex-1 flex flex-col lg:flex-row gap-6 p-4 md:p-6">
+        
+        <!-- Left Sidebar: Collections & Filters -->
+        <aside class="w-full lg:w-80 flex-shrink-0 space-y-6">
+            
+            <!-- Mode Switcher -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-1.5 grid grid-cols-3 gap-1">
+                <button onclick="setMode('flashcards')" id="mode-flashcards" class="py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow">
+                    <span>🗂️</span> Kartičky
+                </button>
+                <button onclick="setMode('list')" id="mode-list" class="py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
+                    <span>📋</span> Seznam
+                </button>
+                <button onclick="setMode('quiz')" id="mode-quiz" class="py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
+                    <span>🎯</span> Test
+                </button>
+            </div>
+
+            <!-- Special Quick Filter: Otázky z fotek zápočtových testů -->
+            <div class="bg-gradient-to-br from-rose-950/60 to-slate-900 border border-rose-500/40 rounded-2xl p-4 space-y-2.5 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                        <span>📸</span> Zápočtové testy z fotek
+                    </span>
+                    <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-500/30" id="exam-known-badge">0/34</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Všech 34 otázek z vyfocených písemek (Var. A, B, C) zodpovězených <strong>přesně podle obou skript VŠB</strong> (včetně odkazů na strany).
+                </p>
+                <div class="grid grid-cols-1 gap-1.5 pt-1">
+                    <button onclick="activateExamPhotosDeck()" id="btn-exam-only" class="w-full py-2 px-3 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition flex items-center justify-center gap-2 shadow">
+                        <span>🔥</span> Spustit Flashcards jen z fotek (34)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter by Status (Umím / Neumím / Vše) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Filtr stavu znalostí</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setStatusFilter('all')" id="filter-all" class="px-3 py-2 rounded-xl text-xs font-medium border border-blue-500 bg-blue-500/10 text-blue-300 text-left flex justify-between items-center">
+                        <span>Všechny</span>
+                        <span class="font-mono text-[11px] opacity-80" id="count-all">208</span>
+                    </button>
+                    <button onclick="setStatusFilter('not_known')" id="filter-not_known" class="px-3 py-2 rounded-xl text-xs font-medium border border-slate-800 bg-slate-800/50 hover:bg-slate-800 text-slate-300 text-left flex justify-between items-center">
+                        <span>🔥 K naučení</span>
+                        <span class="font-mono text-[11px] opacity-80" id="count-not_known">208</span>
+                    </button>
+                    <button onclick="setStatusFilter('learning')" id="filter-learning" class="px-3 py-2 rounded-xl text-xs font-medium border border-slate-800 bg-slate-800/50 hover:bg-slate-800 text-amber-300 text-left flex justify-between items-center">
+                        <span>❌ Neumím</span>
+                        <span class="font-mono text-[11px] opacity-80" id="count-learning">0</span>
+                    </button>
+                    <button onclick="setStatusFilter('known')" id="filter-known" class="px-3 py-2 rounded-xl text-xs font-medium border border-slate-800 bg-slate-800/50 hover:bg-slate-800 text-emerald-300 text-left flex justify-between items-center">
+                        <span>✅ Umím</span>
+                        <span class="font-mono text-[11px] opacity-80" id="count-known">0</span>
+                    </button>
+                </div>
+                <button onclick=" toggleStarFilter()" id="filter-starred" class="w-full px-3 py-2 rounded-xl text-xs font-medium border border-slate-800 bg-slate-800/50 hover:bg-slate-800 text-yellow-400 flex justify-between items-center transition">
+                    <span>⭐ Pouze oblíbené / těžké</span>
+                    <span class="font-mono text-[11px]" id="count-starred">0</span>
+                </button>
+            </div>
+
+            <!-- Collections (Kapitoly) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Sbírky otázek (Kapitoly)</h2>
+                    <button onclick="selectCategory('all')" class="text-xs text-blue-400 hover:underline">Vybrat vše</button>
+                </div>
+                <div class="space-y-1.5 max-h-[380px] overflow-y-auto pr-1" id="category-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Right Main Area -->
+        <main class="flex-1 flex flex-col min-w-0">
+            
+            <!-- Search & Utility Bar -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div class="relative flex-1 min-w-[220px]">
+                    <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
+                    <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Hledat v otázkách, odpovědích nebo podle čísla (např. 64, Klossův, komutace)..." 
+                        class="w-full pl-9 pr-4 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="shuffleDeck()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition" title="Náhodně zamíchat aktuální výběr">
+                        <span>🔀</span> Zamíchat
+                    </button>
+                    <button onclick="resetDeckOrder()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition" title="Seřadit vzestupně podle čísel">
+                        <span>🔢</span> Od 1
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 1: FLASHCARDS MODE -->
+            <div id="view-flashcards" class="flex-1 flex flex-col items-center justify-center">
+                
+                <!-- Card Counter & Quick Jump -->
+                <div class="w-full max-w-2xl flex items-center justify-between mb-3 px-1">
+                    <span class="text-xs font-medium text-slate-400" id="card-position-text">Karta 1 z 208</span>
+                    <div class="flex items-center gap-2">
+                        <span id="current-card-badge" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-800 text-slate-400">Neprojito</span>
+                        <button onclick="toggleCurrentStar()" id="current-star-btn" class="text-lg leading-none text-slate-600 hover:text-yellow-400 transition" title="Označit hvězdičkou (Klávesa S)">★</button>
+                    </div>
+                </div>
+
+                <!-- 3D Flashcard Container -->
+                <div class="w-full max-w-2xl h-[380px] sm:h-[420px] perspective-1000 cursor-pointer select-none mb-6" onclick="flipCard()">
+                    <div id="flashcard-inner" class="relative w-full h-full duration-500 transform-style-3d transition-transform">
+                        
+                        <!-- FRONT SIDE (Question) -->
+                        <div class="absolute inset-0 w-full h-full backface-hidden bg-gradient-to-b from-slate-900 to-slate-900/95 border-2 border-slate-800 hover:border-slate-700 rounded-3xl p-6 sm:p-10 flex flex-col justify-between shadow-2xl">
+                            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                                <span class="text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20" id="card-front-cat">Kapitola 1</span>
+                                <span class="text-xs font-mono text-slate-400" id="card-front-id">Otázka #1</span>
+                            </div>
+
+                            <div class="my-auto py-4 overflow-y-auto max-h-[240px]">
+                                <h3 class="text-xl sm:text-2xl font-bold text-center text-white leading-relaxed" id="card-front-question">
+                                    Co nazýváme strojem?
+                                </h3>
+                            </div>
+
+                            <div class="text-center text-xs text-slate-500 flex items-center justify-center gap-2 border-t border-slate-800/80 pt-3">
+                                <span>👆 Klikni nebo stiskni <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-slate-300 font-mono">Mezerník</kbd> pro otočení na odpověď</span>
+                            </div>
+                        </div>
+
+                        <!-- BACK SIDE (Answer) -->
+                        <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950/30 border-2 border-indigo-500/40 rounded-3xl p-6 sm:p-10 flex flex-col justify-between shadow-2xl">
+                            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                                <span class="text-xs font-mono uppercase tracking-wider px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Odpověď ze skript</span>
+                                <span class="text-xs font-mono text-slate-400" id="card-back-id">Otázka #1</span>
+                            </div>
+
+                            <div class="my-auto py-3 overflow-y-auto max-h-[250px] pr-1">
+                                <div class="text-base sm:text-lg text-slate-100 leading-relaxed space-y-2 whitespace-pre-line" id="card-back-answer">
+                                    Stroj je zařízení na přeměnu energie.
+                                </div>
+                            </div>
+
+                            <div class="text-center text-xs text-slate-400 border-t border-slate-800/80 pt-3">
+                                Ohodnoť svou znalost tlačítky dole (nebo klávesami <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-slate-300 font-mono">1</kbd> = Neumím, <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-slate-300 font-mono">2</kbd> = Umím)
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Controls Bar -->
+                <div class="w-full max-w-2xl flex flex-wrap items-center justify-between gap-3">
+                    <button onclick="prevCard()" class="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-sm font-medium flex items-center gap-2 transition">
+                        <span>←</span> Předchozí
+                    </button>
+
+                    <div class="flex items-center gap-3 flex-1 justify-center">
+                        <button onclick="markCurrentCard('learning')" class="flex-1 max-w-[180px] py-3 px-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-semibold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/5">
+                            <span>❌</span> Neumím <kbd class="hidden sm:inline-block text-[10px] px-1.5 py-0.5 bg-amber-500/20 rounded font-mono">1</kbd>
+                        </button>
+                        <button onclick="markCurrentCard('known')" class="flex-1 max-w-[180px] py-3 px-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-semibold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-500/5">
+                            <span>✅</span> Umím <kbd class="hidden sm:inline-block text-[10px] px-1.5 py-0.5 bg-emerald-500/20 rounded font-mono">2</kbd>
+                        </button>
+                    </div>
+
+                    <button onclick="nextCard()" class="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-sm font-medium flex items-center gap-2 transition">
+                        Další <span>→</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- VIEW 2: LIST MODE -->
+            <div id="view-list" class="hidden flex-1 space-y-3">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- VIEW 3: QUIZ MODE -->
+            <div id="view-quiz" class="hidden flex-1 flex flex-col items-center justify-center">
+                <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-400">Rychlý kvíz (4 možnosti)</span>
+                            <h3 class="text-sm text-slate-400" id="quiz-progress">Otázka z aktuálního filtru</h3>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">Skóre v této relaci:</span>
+                            <div class="font-mono font-bold text-emerald-400" id="quiz-score">0 / 0</div>
+                        </div>
+                    </div>
+
+                    <div class="py-2">
+                        <span class="text-xs font-mono text-slate-400" id="quiz-q-id">#1</span>
+                        <h4 class="text-lg sm:text-xl font-bold text-white mt-1" id="quiz-question-text">Otázka...</h4>
+                    </div>
+
+                    <div id="quiz-options" class="space-y-2.5">
+                        <!-- Options populated by JS -->
+                    </div>
+
+                    <div id="quiz-feedback" class="hidden p-4 rounded-2xl border text-sm"></div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="generateQuizQuestion()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition">
+                            Další otázka v kvízu →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- GITHUB & BACKUP MODAL -->
+    <div id="sync-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">💾</span>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Ukládání postupu & GitHub Repo Sync</h3>
+                        <p class="text-xs text-slate-400">Jak nikdy nepřijít o zaznamenané otázky, které umíš a neumíš</p>
+                    </div>
+                </div>
+                <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+
+            <div class="space-y-4 text-sm text-slate-300">
+                <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-200">
+                    <strong>1. Automatické ukládání v prohlížeči (LocalStorage):</strong><br>
+                    Kdykoliv klikneš na „Umím“ nebo „Neumím“, tvůj postup se okamžitě uloží přímo do tvého prohlížeče. Pokud aplikaci otevřeš na stejném počítači/mobilu (např. přes GitHub Pages), tvůj stav se automaticky načte.
+                </div>
+
+                <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 space-y-3">
+                    <strong class="text-blue-200">2. Trvalé uložení přímo do kódu na GitHub (Hardcode Progress):</strong>
+                    <p class="text-xs text-slate-300">
+                        Chceš-li mít svůj postup natvrdo zapsaný přímo ve zdrojovém kódu na GitHubu (abys ho měl úplně všude, i v anonymním okně nebo na jiném PC), zkopíruj si tento vygenerovaný řádek a vlož ho na začátek skriptu v <code>index.html</code> místo <code>const GITHUB_SAVED_PROGRESS = {};</code>:
+                    </p>
+                    <div class="relative">
+                        <textarea id="hardcode-export-box" readonly rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono text-xs text-blue-300 focus:outline-none"></textarea>
+                        <button onclick="copyHardcodeProgress()" class="absolute right-2 top-2 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium">Kopírovat kód</button>
+                    </div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-3 pt-2">
+                    <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-800 space-y-2">
+                        <strong class="text-white block">Export / Import JSON souboru</strong>
+                        <p class="text-xs text-slate-400">Stáhni si zálohu do souboru nebo ji nahraj zpět.</p>
+                        <div class="flex gap-2 pt-1">
+                            <button onclick="exportProgressJSON()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-medium text-white flex-1">⬇️ Stáhnout JSON</button>
+                            <label class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-medium text-white flex-1 text-center cursor-pointer">
+                                ⬆️ Nahrát JSON
+                                <input type="file" accept=".json" onchange="importProgressJSON(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2">
+                        <strong class="text-rose-300 block">Resetovat postup</strong>
+                        <p class="text-xs text-slate-400">Vymaže všechny označení Umím / Neumím a začneš od nuly.</p>
+                        <button onclick="resetAllProgress()" class="w-full px-3 py-2 bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 rounded-xl text-xs font-medium text-rose-300 mt-1">
+                            🗑️ Vymazat celý postup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMULA CHEATSHEET MODAL -->
+    <div id="formula-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-4xl w-full p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="font-bold text-lg text-white">📐 Přehled klíčových vzorců ke zkoušce</h3>
+                    <p class="text-xs text-slate-400">Nejdůležitější vztahy ze skript Elektrické stroje v energetice</p>
+                </div>
+                <button onclick="closeFormulaModal()" class="text-slate-400 hover:text-white text-xl">✕</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <h4 class="font-bold text-blue-400">1. Základy, Vinutí a Indukované napětí</h4>
+                    <ul class="space-y-1.5 text-xs text-slate-300 font-mono">
+                        <li>• Účinnost: η = P₂ / P₁ = P / P₁</li>
+                        <li>• Mechanický výkon: P = M · ω = M · (2π·n / 60)</li>
+                        <li>• Počet drážek na pól a fázi: q = Q / (2p · m)</li>
+                        <li>• Krok cívky v drážkách: y = Q / 2p</li>
+                        <li>• Synchronní otáčky: n_s = 60 · f / p [min⁻¹]</li>
+                        <li>• Efektivní ind. napětí: U_i = 4,44 · f · N · Φ_max · k_v</li>
+                        <li>• Pohybové napětí: u = B · l · v</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <h4 class="font-bold text-emerald-400">2. Transformátory</h4>
+                    <ul class="space-y-1.5 text-xs text-slate-300 font-mono">
+                        <li>• Zapínací proud: I_zap = (4 až 6) · I_n</li>
+                        <li>• Poměrné napětí nakrátko: u_1k = (U_1k / U_1n) · 100 [%]</li>
+                        <li>• Ustálený zkratový proud: I_1k = I_1n · (100 / u_1k)</li>
+                        <li>• Roční náklady: N_r = N_0 + N_k + N_ú + O</li>
+                        <li>• Průrazná pevnost oleje: min. 92 kV/cm (25 kV/3mm)</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <h4 class="font-bold text-amber-400">3. Asynchronní stroje</h4>
+                    <ul class="space-y-1.5 text-xs text-slate-300 font-mono">
+                        <li>• Skluz: s = (n_s - n) / n_s</li>
+                        <li>• Rotorová frekvence a napětí: f₂ = s · f₁ , U₂ = s · U₂₀</li>
+                        <li>• Klossův vztah: M / M_zvr = 2 / (s/s_zvr + s_zvr/s)</li>
+                        <li>• Závislost momentu na napětí: M ~ U₁²</li>
+                        <li>• Řízení otáček: n = (60 · f₁ / p) · (1 - s)</li>
+                        <li>• Řád drážkových harm.: ν = c · (Q / p) ± 1 = 2·m·q·c ± 1</li>
+                        <li>• Ztráty v režimu brzdy: až 3× větší než při rozběhu</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                    <h4 class="font-bold text-purple-400">4. Synchronní a Stejnosměrné stroje</h4>
+                    <ul class="space-y-1.5 text-xs text-slate-300 font-mono">
+                        <li>• Synchronní reaktance: X_d = X_r + X_1σ</li>
+                        <li>• Moment synchr. hl. stroje: M ~ (U_f · U_b / X_d) · sin(β)</li>
+                        <li>• Mez statické stability: β = π/2 (u vyniklých pólů &lt; π/2)</li>
+                        <li>• Napětí SS stroje: U_i = (p/a) · N_v · Φ₀ · n = k · Φ · n</li>
+                        <li>• Moment SS stroje: M = c · Φ · I</li>
+                        <li>• Napěťová rce: Dynamo U = U_i - R·I_a | Motor U = U_i + R·I_a</li>
+                        <li>• Otáčky SS motoru: n ~ U / Φ (u sériového M ~ I² ~ 1/n²)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // SEM MŮŽEŠ VLOŽIT SVŮJ POSTUP PRO TRVALÉ ULOŽENÍ NA GITHUBU:
+        // ============================================================================
+        const GITHUB_SAVED_PROGRESS = {};
+        // ============================================================================
+
+        const CATEGORIES = [
+            { id: "test_foto", title: "📸 Zápočtové testy z fotek (Var. A, B, C)", range: "34 otázek", highlight: true },
+            { id: "ep_skripta", title: "🔌 Elektrické přístroje (2. skripta)", range: "18 otázek", highlight: true },
+            { id: "blok1_zaklady", title: "1. Základy, materiály, vinutí a mg. pole (Kap. 1–3)", range: "Ot. 1–29 (29)" },
+            { id: "blok2_trafo", title: "2. Transformátory – kompletní (Kap. 4)", range: "Ot. 30–47 (18)" },
+            { id: "blok3_asyn_1", title: "3. Asynchronní stroje I – princip, moment a spouštění", range: "Ot. 48–72 (25)" },
+            { id: "blok4_asyn_2", title: "4. Asynchronní stroje II – řízení otáček, harmonické a bilance", range: "Ot. 73–91 (19)" },
+            { id: "blok5_syn_1", title: "5. Synchronní stroje I – konstrukce, char., provoz a buzení", range: "Ot. 92–120 (29)" },
+            { id: "blok6_syn_2", title: "6. Synchronní stroje II – fázování, zkraty, stabilita a motory", range: "Ot. 121–154 (34)" },
+            { id: "blok7_ss_1", title: "7. Stejnosměrné stroje I – princip, obvod, reakce a komutace", range: "Ot. 155–180 (26)" },
+            { id: "blok8_ss_2", title: "8. Stejnosměrné stroje II – zvlněný proud, buzení, motory + Příklady", range: "Ot. 181–208 (28)" }
+        ];
+
+        // Mapování původních malých podkapitol do velkých sloučených sbírek po ~25 otázkách
+        function getConsolidatedCategory(card) {
+            if (card.cat === "test_foto") return "test_foto";
+            if (card.cat === "ep_skripta") return "ep_skripta";
+            if (card.id >= 1 && card.id <= 29) return "blok1_zaklady";
+            if (card.id >= 30 && card.id <= 47) return "blok2_trafo";
+            if (card.id >= 48 && card.id <= 72) return "blok3_asyn_1";
+            if (card.id >= 73 && card.id <= 91) return "blok4_asyn_2";
+            if (card.id >= 92 && card.id <= 120) return "blok5_syn_1";
+            if (card.id >= 121 && card.id <= 154) return "blok6_syn_2";
+            if (card.id >= 155 && card.id <= 180) return "blok7_ss_1";
+            return "blok8_ss_2"; // Otázky 181–195 + Příklady 196–208 (celkem 28 karet)
+        }
+
+        // Všech 195 otázek + 13 příkladů přesně podle závěru PDF skript
+        const QUESTIONS = [
+            // Kap 1
+            { id: 1, cat: "kap1", q: "Co nazýváme strojem?", a: "Stroj je zařízení na přeměnu energie." },
+            { id: 2, cat: "kap1", q: "Jaký je rozdíl mezi generátorem a motorem?", a: "Generátor mění mechanickou energii na elektrickou a motor mění elektrickou energii na mechanickou." },
+            { id: 3, cat: "kap1", q: "Vyjmenujte druhy netočivých el. strojů.", a: "Transformátory a měniče." },
+            { id: 4, cat: "kap1", q: "Vyjmenujte druhy točivých el. strojů.", a: "Elektrické stroje se dělí podle druhu proudu na stejnosměrné a střídavé. Další dělení je podle principu působení a konstrukce:\n• asynchronní stroje\n• synchronní stroje\n• stejnosměrné stroje\n• střídavé stroje s komutátorem." },
+            // Kap 2.1
+            { id: 5, cat: "kap2_1", q: "Kde vznikají v el. stroji ztráty?", a: "Ve vinutí, v magnetickém obvodu a v mechanických částech." },
+            { id: 6, cat: "kap2_1", q: "Vyjmenujte aktivní a konstrukční materiály v el. strojích.", a: "• Aktivní materiály jsou magneticky a elektricky vodivé (křemíkový plech, měď, hliník, uhlík).\n• Konstrukční materiály jsou ocel, litina i hliník." },
+            { id: 7, cat: "kap2_1", q: "Vyjmenujte úkoly izolačního systému v el. stroji.", a: "Ochrana před nebezpečným dotykem a vzájemné oddělení elektricky vodivých částí." },
+            { id: 8, cat: "kap2_1", q: "Jaká chladicí média se používají v el. strojích?", a: "Vzduch, voda, olej, vodík, dusík." },
+            { id: 9, cat: "kap2_1", q: "Čím je u el. stroje zajištěna ochrana proti nebezpečnému dotyku?", a: "Izolací, uzemněním, oddělením živých částí, kryty apod. (označení stupně krytí IP xx)." },
+            { id: 10, cat: "kap2_1", q: "Co vyznačuje tvar el. stroje?", a: "Tvarem stroje (označení IM x xx x) se rozumí konstrukční úprava mechanických částí stroje z hlediska způsobu jeho upevnění k základu nebo poháněnému mechanismu, dále z hlediska mechanického spojení s poháněným mechanismem, s ohledem na umístění ložisek a také na tvar a polohu konce hřídele." },
+            // Kap 2.2
+            { id: 11, cat: "kap2_2", q: "Popište funkci vinutí v točivém stroji.", a: "Vinutí je aktivní část elektrického obvodu stroje, která se skládá z cívek navzájem spojených a spřažených magnetickým tokem tak, aby vyhovovaly požadované funkci stroje.\n\nVinutí mají dvě základní funkce:\n1. vytvářet elektromotorickou sílu (ems) potřebnou pro činnost stroje,\n2. budit magnetické pole nutné k přeměně energie." },
+            { id: 12, cat: "kap2_2", q: "Z jakých elementů je vinutí tvořeno?", a: "Vinutí je tvořeno cívkami. Každá cívka se skládá ze závitů. Vinutí má část uloženou v drážkách (drážková část cívky) a část tvořící čela cívky + vývody." },
+            { id: 13, cat: "kap2_2", q: "Vyjmenujte hlavní druhy vinutí.", a: "Podle uložení: statorové, rotorové nebo vinutí pólů.\nPodle druhu proudu: stejnosměrné, střídavé.\nPodle funkce:\n• pracovní:\n  - vstupní (primární) připojené k síti nebo zdroji\n  - výstupní odvádějící el. energii do sítě nebo spotřebiče\n  - budicí (k vytvoření hlavního mg. toku)\n  - kotevní (uložené v kotvě, indukuje se v něm napětí)\n• pomocné:\n  - kompenzační (redukuje účinky proudu v jiných vinutích)\n  - tlumící spojené nakrátko (amortizér)\n  - vyrovnávací (pro vyrovnávání nesymetrií)\n  - rozběhové (k vytvoření rozběhového momentu včetně pomocné fáze)." },
+            // Kap 2.3
+            { id: 14, cat: "kap2_3", q: "Jaké druhy střídavých vinutí znáte?", a: "Podle počtu fází: jednofázová, dvoufázová, trojfázová, vícefázová.\nPodle způsobu provedení: cívková a tyčová (příp. klecová)." },
+            { id: 15, cat: "kap2_3", q: "Popište rozdíl mezi jednovrstvým a dvouvrstvým vinutím.", a: "Podle uložení cívek v drážkách:\n• Jednovrstvá – v každé drážce je jen jedna cívková strana, a proto je počet cívek poloviční než počet drážek: Nc = Q / 2.\n• Dvouvrstvá – cívka zaplňuje jednou cívkovou stranou dolní polovinu drážky a druhou cívkovou stranou horní polovinu drážky. V drážce jsou dvě cívkové strany různých cívek. Cívek je tolik, kolik je drážek: Nc = Q." },
+            { id: 16, cat: "kap2_3", q: "Co vyjadřuje činitel vinutí?", a: "Činitel vinutí (kv) vyjadřuje zmenšení indukovaného napětí zkrácením kroku a rozložením vinutí do drážek (případně zešikmením drážek)." },
+            { id: 17, cat: "kap2_3", q: "Proč se zešikmují drážky?", a: "Aby se omezily prostorové (drážkové/zubové) harmonické a pulsace magnetického toku." },
+            { id: 18, cat: "kap2_3", q: "Vypočítejte krok vinutí je-li dán počet drážek Q a počet pólů 2p.", a: "Krok cívky se vypočte v počtu drážek podle vztahu:\ny = Q / 2p" },
+            // Kap 2.4
+            { id: 19, cat: "kap2_4", q: "Vyjmenujte vinutí ve stejnosměrném motoru a jejich funkci.", a: "• Vinutí hlavních pólů (budicí vinutí) – tvořeno kompaktními cívkami nasazenými na mg. jádra hl. pólů. Slouží k vybuzení hlavního magnetického pole.\n• Vinutí pomocných (komutačních) pólů – cívky na jádrech pomocných pólů, méně závitů z vodičů většího průřezu (protéká jimi kotevní proud). Zlepšují komutaci.\n• Kompenzační vinutí – tyče uložené v drážkách pólových nástavců hlavních pólů (protéká jimi kotevní proud). Kompenzují reakci kotvy.\n• Vinutí kotvy – rozloženo v drážkách rotoru a spojeno s komutátorem (indukuje se v něm napětí)." },
+            { id: 20, cat: "kap2_4", q: "Kolik řad kartáčů má čtyřpólový motor a co platí obecně?", a: "Čtyři řady kartáčů. Obecně platí: kolik pólů, tolik řad kartáčů." },
+            { id: 21, cat: "kap2_4", q: "Jaká vinutí se používají v kotvách stejnosměrných strojů?", a: "Zásadně dvouvrstvová (uzavřená – smyčková nebo vlnová)." },
+            // Kap 3.1
+            { id: 22, cat: "kap3_1", q: "Jaký je obecný tvar mg. pole v el. stroji?", a: "Tvar magnetického pole je obecně nesinusový." },
+            { id: 23, cat: "kap3_1", q: "Kdy vznikne kmitavé pole?", a: "Při jednofázovém vinutí napájeném střídavým proudem (mění velikost od 0 do +Φmax, 0 a -Φmax, ale nemění prostorovou polohu)." },
+            { id: 24, cat: "kap3_1", q: "Jaké jsou podmínky pro vznik točivého pole?", a: "Minimálně dvoufázové vinutí prostorově rozložené ve stroji po 90° el. a dvě střídavá napětí (proudy) časově posunutá rovněž o 90° el." },
+            { id: 25, cat: "kap3_1", q: "Vysvětlete vznik trojfázového kruhového pole.", a: "Ve stroji je trojfázové vinutí prostorově rozložené po 120° el., napájené třífázovým napětím (proudy) časově posunutým o 120° el. Výsledný vektor magnetické indukce má konstantní velikost (3/2 Bm) a otáčí se rovnoměrně synchronní rychlostí ns = 60·f / p." },
+            { id: 26, cat: "kap3_1", q: "Vysvětlete točivé eliptické pole.", a: "Vzniká, pokud není vzájemný prostorový nebo časový posuv fází vinutí přesně 90° (resp. 120°), nebo pokud se velikost amplitudy napětí/proudu jedné fáze liší od druhé fáze (případně součtem dvou točivých polí různých amplitud otáčejících se v opačných smyslech). Vektor se otáčí proměnlivou rychlostí a mění svou velikost." },
+            // Kap 3.2
+            { id: 27, cat: "kap3_2", q: "Jakými způsoby vzniká indukované napětí?", a: "Pohybovou nebo časovou (transformační) změnou magnetického pole:\ne = -Nc · (db/dt)·S - Nc · B·(dS/dt)" },
+            { id: 28, cat: "kap3_2", q: "Vysvětlete d'Alembertův princip.", a: "Vektorový součet vnější a vnitřní síly působící na pohybující se těleso a setrvačné síly tělesa je v každém okamžiku roven nule.\nU rotačních strojů: Vnitřní elektromagnetický moment stroje se rovná momentu poháněného zařízení (zátěže) a potřebnému urychlovacímu či brzdícímu momentu setrvačných sil:\nmi + Σmr = J · (dωm / dt)" },
+            { id: 29, cat: "kap3_2", q: "Mění se v elektromotoru elektrická energie na mechanickou přímo?", a: "Nemění se přímo, mění se prostřednictvím energie magnetického pole." },
+            // Kap 4.1
+            { id: 30, cat: "kap4_1", q: "K čemu slouží transformátor?", a: "Používá se k přeměně elektrické energie určitého střídavého napětí a proudu na elektrickou energii jiného (případně stejného) napětí a proudu při stejném kmitočtu bez přispění mechanické energie." },
+            { id: 31, cat: "kap4_1", q: "Proč musí mít transformátor štítek?", a: "Na štítku transformátoru jsou uvedeny všechny potřebné jmenovité technické údaje o transformátoru (výkon, napětí, proud, kmitočet, uk%, zapojení vinutí a hodinový úhel, chlazení, krytí, hmotnost), dále o jeho výrobci a druhu použití." },
+            { id: 32, cat: "kap4_1", q: "Vyjmenujte druhy vinutí transformátorů.", a: "• Primární vinutí – v provozních podmínkách získává činný výkon z napájecí sítě.\n• Sekundární vinutí – předává činný výkon obvodu zátěže.\nPodle konstrukčního provedení může být vinutí válcové (souosé) nebo diskové (prostřídané)." },
+            { id: 33, cat: "kap4_1", q: "Jaký je rozdíl mezi jádrovým a plášťovým transformátorem?", a: "• Jádrový transformátor má magnetický obvod ve tvaru sloupků (jader). Vinutí bývá obvykle souosé (válcové).\n• Plášťový transformátor má svazek plechů, které tvoří jádro i plášť obklopující vnější část vinutí. Mají obvykle prostřídané vinutí (NN, VN, NN, VN...)." },
+            // Kap 4.2
+            { id: 34, cat: "kap4_2", q: "Jaké děje nastávají při připojení transformátoru na napájecí síť?", a: "Při připojení transformátoru na síť (zejména v okamžiku, kdy napětí prochází nulou) může vzniknout přechodný děj se stejnosměrnou složkou toku a vlivem remanence, během kterého zapínací proud naprázdno dosáhne mnohem větší hodnoty než jmenovitý proud: Izap = (4 až 6)·In, tj. (50 až 100)·I0." },
+            { id: 35, cat: "kap4_2", q: "Jsou proudy při připojení transformátoru nebezpečné?", a: "Dynamické a tepelné účinky zapínacího proudu nejsou pro transformátor nebezpečné. Může však dojít k chybnému odpojení transformátoru při zapínání, a proto je nutno se zapínacím proudem uvažovat při návrhu jistících prvků transformátoru." },
+            { id: 36, cat: "kap4_2", q: "Proč nastává nesymetrické zatížení transformátorů?", a: "Protože ze sítě jsou napájeny i jednofázové spotřebiče (např. el. pece, domácnosti). I když se rozvodné závody snaží rovnoměrně rozdělit tyto spotřebiče na jednotlivé fáze, nelze zaručit současné stejné zatížení všech fází transformátoru." },
+            { id: 37, cat: "kap4_2", q: "Jaké má nesymetrické zatížení negativní důsledky?", a: "Způsobuje nekompenzované netočivé (konfázní) magnetické toky, které se uzavírají rozptylovými cestami (přes nádobu apod.), indukují vířivé proudy, způsobují vyšší přídavné ztráty a oteplení, a vyvolávají posunutí nulového bodu (deformaci hvězdice a kolísání fázových napětí)." },
+            { id: 38, cat: "kap4_2", q: "Jak zmírníme negativní důsledky při nesymetrickém zatížení?", a: "Zapojením vinutí transformátoru do trojúhelníku (D), lomené hvězdy (z) nebo vyvedením uzlu vinutí při zapojení do hvězdy u primárního i sekundárního vinutí (YNyn). Lze použít rovněž pětijádrový transformátor." },
+            { id: 39, cat: "kap4_2", q: "Vysvětlete rozdíl mezi transformátorem nakrátko a zkratem transformátoru?", a: "• Při zkoušce transformátoru nakrátko je přiloženo snížené napětí Uk (3–12 % Un), takže vinutím protéká proud vesměs nepřesahující jmenovitý proud In.\n• Při zkratu (poruchový stav při plném jmenovitém napětí) je proud mnohonásobně vyšší." },
+            { id: 40, cat: "kap4_2", q: "K čemu slouží napětí nakrátko?", a: "K určení ustáleného zkratového proudu transformátoru (Ik = In · 100 / uk%) a pro posouzení vhodnosti transformátorů k paralelní spolupráci." },
+            // Kap 4.3
+            { id: 41, cat: "kap4_3", q: "Co přispívá ke zvýšení účinnosti transformátorů?", a: "Užití vhodných kvalitních materiálů pro magnetický obvod (orientované plechy, amorfní kovy) i pro vinutí, dále přesný a dokonalý návrh transformátoru a dokonalá technologie při jeho výrobě." },
+            { id: 42, cat: "kap4_3", q: "Jaké ztráty vznikají v transformátoru a které převažují?", a: "Vznikají ztráty ve vinutí (nakrátko ΔPCu), ztráty v magnetickém obvodu (naprázdno v železe ΔPFe) a ztráty přídavné. Nejvyšší jsou ztráty ve vinutí." },
+            { id: 43, cat: "kap4_3", q: "Jaký podíl tvoří ztráty transformátorů na ztrátách celé elektrizační soustavy?", a: "Podíl ztrát transformátorů na celkových ztrátách v distribuční síti je mezi 18 až 20 %." },
+            { id: 44, cat: "kap4_3", q: "Jak stanovíte náklady na provoz transformátorů?", a: "Náklady na roční provoz transformátoru vyjádříme vztahem:\nNr = N0 + Nk + Nú + O\nkde:\n• N0 jsou náklady na ztráty naprázdno\n• Nk jsou náklady na ztráty nakrátko\n• Nú představují náklady na údržbu a obsluhu\n• O jsou roční odpisy, režie apod." },
+            // Kap 4.4
+            { id: 45, cat: "kap4_4", q: "K čemu slouží transformátorový olej?", a: "Transformátorový olej představuje jednu z rozhodujících složek chladicího a izolačního systému transformátoru. Jeho kvalita ovlivňuje funkční vlastnosti a životnost transformátoru." },
+            { id: 46, cat: "kap4_4", q: "Proč se provádí filtrace a vysoušení oleje?", a: "Pokud nemá olej předepsané parametry, provádí se jeho filtrace, tj. čištění a sušení. Při ní se odstraní z oleje pevné nečistoty, kaly, voda, vzduch a jiné plyny, které znehodnocují olej, a tím se obnoví jeho izolační a chladicí schopnost." },
+            { id: 47, cat: "kap4_4", q: "Jaká je vyhovující průrazná pevnost oleje?", a: "Průrazné napětí by mělo být min. cca 92 kV/cm, tj. 25 kV/3mm." },
+            // Kap 5.1
+            { id: 48, cat: "kap5_1", q: "Vysvětlete význam asynchronních motorů pro elektrické pohony.", a: "Asynchronní motory jsou nejrozšířenější točivé elektrické stroje (spotřebovávají téměř polovinu veškeré vyráběné el. energie). Je to dáno jejich jednoduchostí, spolehlivostí, nízkou cenou a snadnou přizpůsobitelností pro všechny druhy pohonů." },
+            { id: 49, cat: "kap5_1", q: "Jaké jsou výhody a nevýhody asynchronních strojů?", a: "• Výhody: jednoduchost, nenáročnost na údržbu, dobrá provozní spolehlivost, malá pořizovací cena a přímé napájení ze střídavých třífázových sítí.\n• Nevýhody: odběr jalové magnetizační energie z napájecí sítě (zhoršuje účiník), velký proudový náraz při přímém spouštění a bez měniče kmitočtu obtížnější plynulá regulace rychlosti." },
+            { id: 50, cat: "kap5_1", q: "Jaké druhy asynchronních strojů znáte?", a: "Podle provedení rotorového (kotevního) vinutí:\n• motory s kotvou nakrátko (klecové vinutí z tyčí spojených nakrátko)\n• motory s kotvou kroužkovou (vinutý rotor vyvedený na kroužky).\nPodle účelu použití: motory nakrátko všeobecného použití, jeřábové motory, válečkové motory, speciální motory apod." },
+            { id: 51, cat: "kap5_1", q: "Popište konstrukční části as. stroje.", a: "Dvě podstatné části jsou stator a rotor.\n• Stator má vinutí uložené v drážkách připojené k síti nebo měniči (spojené do Y nebo D na svorkovnici).\n• Magnetický obvod je složen z plechů z elektrotechnické oceli (tl. 0,5 mm).\n• Rotor je hladký a vzduchová mezera je rovnoměrná (desetiny mm až několik mm).\n• Další konstrukční části: kostra, ložiskové štíty, hřídel, ložiska a ventilátor." },
+            { id: 52, cat: "kap5_1", q: "Z čeho je složen mg. obvod as. stroje?", a: "Magnetický obvod asynchronního stroje je složen ze svazku plechů z elektrotechnické oceli (s přísadou křemíku) obvykle o tloušťce 0,5 mm, jejichž povrch je vzájemně izolován. Dělí se na 5 částí: vzduchovou mezeru, zuby statoru a rotoru a jho statoru a rotoru." },
+            // Kap 5.2
+            { id: 53, cat: "kap5_2", q: "Vysvětlete princip činnosti asynchronního motoru.", a: "Rotor není elektricky spojen se statorem – výkon se přenáší elektromagnetickou indukcí. Princip je založen na vzájemném silovém působení točivého magnetického pole statoru a proudů vyvolaných tímto polem ve vinutí rotoru. Aby se v rotoru indukovalo napětí a protékal proud, musí existovat relativní pohyb rotoru vůči točivému poli statoru – otáčky rotoru n jsou proto vždy o něco nižší než synchronní otáčky ns." },
+            { id: 54, cat: "kap5_2", q: "Napište vztah pro rotorovou frekvenci.", a: "f₂ = s · f₁\n(kde s je skluz a f₁ je frekvence statorové sítě)." },
+            { id: 55, cat: "kap5_2", q: "V jakém stavu se v rotoru indukuje nejvyšší napětí?", a: "Protože U₂ = s · U₂₀ (kde U₂₀ je napětí naprázdno při stojícím rotoru s = 1), nejvyšší napětí se v rotoru indukuje při největším skluzu, tedy ve stavu protiproudové brzdy (pro s = 2 dosahuje až 2·U₂₀)." },
+            { id: 56, cat: "kap5_2", q: "Jaké jsou pracovní stavy asynchronních strojů?", a: "Asynchronní stroje mohou pracovat jako:\n1. Motor (0 < s < 1, otáčky 0 < n < ns)\n2. Generátor (s < 0, otáčky n > ns)\n3. Brzda (s > 1, rotor se otáčí proti směru točivého pole, n < 0)." },
+            { id: 57, cat: "kap5_2", q: "Jak vypočítáte synchronní otáčky as. motoru?", a: "ns = 60 · f / p  [min⁻¹]\n(kde f je frekvence sítě v Hz a p je počet pólových dvojic)." },
+            { id: 58, cat: "kap5_2", q: "Jak se stanoví skluz motoru?", a: "s = (ns - n) / ns\nkde ns = 60·f / p jsou synchronní otáčky točivého pole statoru [min⁻¹] a n jsou skutečné otáčky rotoru." },
+            { id: 59, cat: "kap5_2", q: "Jak velký skluz může mít as. generátor a brzda?", a: "• U asynchronního generátoru je skluz záporný (s < 0).\n• U brzdy je skluz kladný a větší než 1 (s > 1, může dosáhnout hodnoty 2)." },
+            { id: 60, cat: "kap5_2", q: "Uveďte velikost mg. proudu as. stroje.", a: "Magnetizační proud asynchronního stroje se pohybuje v mezích 20 až 50 % (ve skriptech v textu 20–30 %, v odpovědích 30–50 %) jmenovitého proudu stroje (kvůli vzduchové mezeře je mnohem vyšší než u transformátoru)." },
+            // Kap 5.3
+            { id: 61, cat: "kap5_3", q: "V jakém poměru se přepočítávají rotorové proudy na statorové?", a: "I₂' = I₂ · [(m₂ · N₂ · kv₂) / (m₁ · N₁ · kv₁)] = I₂ · p₂₁i" },
+            { id: 62, cat: "kap5_3", q: "Uveďte vztah pro přepočet rotorového odporu a reaktance na statorové.", a: "R₂' = R₂ · (m₁ / m₂) · (N₁ · kv₁ / (N₂ · kv₂))²\nX₂σ' = X₂σ · (m₁ / m₂) · (N₁ · kv₁ / (N₂ · kv₂))²\n(Pro klecový rotor: pr = (m₁ / Q₂) · 4 · (N₁ · kv₁)²)." },
+            { id: 63, cat: "kap5_3", q: "Nakreslete a popište fázorový diagram zatíženého as. motoru.", a: "Fázorový diagram vychází ze 3 rovnic:\n1) U₁ = R₁·I₁ + jX₁σ·I₁ - Ui\n2) 0 = (R₂'/s)·I₂' + jX₂σ'·I₂' + Ui\n3) I₁ + I₂' = Im\n\nSoučet fázorů proudu statoru I₁ a přepočteného proudu rotoru I₂' dává magnetizační proud Im (který budí hlavní tok Φ a je kolmý na indukované napětí Uh = -Ui). Fázor proudu I₁ se za svorkovým napětím U₁ zpožďuje o fázový posun φ₁." },
+            { id: 64, cat: "kap5_3", q: "Uveďte Klossův vztah.", a: "Zjednodušený Klossův vztah (při zanedbání R₁ = 0):\nM / Mzvr = 2 / [ (s / szvr) + (szvr / s) ]\n\nÚplný Klossův vztah:\nM / Mzvr = 2·(1 + ε) / [ (s / szvr) + (szvr / s) + 2·ε ]" },
+            { id: 65, cat: "kap5_3", q: "Vysvětlete rozdíl mezi záběrným momentem a momentem zvratu.", a: "• Záběrný moment (Mz) je moment při nulových otáčkách (skluz s = 1, při spouštění) a je zhruba roven momentu jmenovitému (příp. 1,5 až 2× Mn).\n• Moment zvratu (Mzvr) je maximální moment stroje (při skluzu zvratu szvr ≈ R₂'/Xσ) a může být 1,6 až 4násobkem momentu jmenovitého." },
+            { id: 66, cat: "kap5_3", q: "Jak se mění moment as. motoru se statorovým napětím?", a: "Moment asynchronního motoru se mění s druhou mocninou (čtvercem) statorového napětí: M ~ U₁²." },
+            // Kap 5.4
+            { id: 67, cat: "kap5_4", q: "Čeho se obáváme při spouštění as. motorů?", a: "Při spouštění asynchronního motoru se snažíme co nejvíce omezit velikost záběrného proudu (proudový náraz v síti způsobující pokles napětí) a mechanické i tepelné namáhání motoru (zejména oteplení rotorové klece)." },
+            { id: 68, cat: "kap5_4", q: "Jak velký je proud při spouštění motoru?", a: "Při přímém spouštění může velikost záběrného proudu dosahovat 5 až 7násobku (dle normy max. 7,5násobku) jmenovitého proudu motoru." },
+            { id: 69, cat: "kap5_4", q: "Čím omezíme proudový náraz při spouštění kroužkového motoru?", a: "Zařazením spouštěcího rezistoru (odporníku) nebo tlumivky (indukčnosti) přes kroužky do obvodu rotorového vinutí. Tím se zároveň zvýší záběrný moment až k hodnotě momentu zvratu." },
+            { id: 70, cat: "kap5_4", q: "Může být motor spouštěn přímým připojením k síti?", a: "Může, pokud jeho výkon a záběrný proud neovlivní negativně napájecí síť a okolní spotřebiče. V běžných sítích NN to platí bez omezení pro motory malých výkonů do 3 kW (ráz do 22 kVA), v tvrdých průmyslových sítích VN i pro motory o výkonu několika MW." },
+            { id: 71, cat: "kap5_4", q: "Vyjmenujte způsoby spouštění motoru s kotvou nakrátko.", a: "1. Přímé připojení k síti\n2. Spouštění se sníženým napětím:\n   • přepínačem hvězda–trojúhelník (Y/D – proud i moment klesnou na 1/3)\n   • předřazením tlumivky (reaktoru) nebo rezistoru statoru\n   • spouštěcím autotransformátorem (Korndorfferovo zapojení)\n   • polovodičovým měničem napětí (softstartérem)\n3. Frekvenčním měničem\n4. Konstrukční úpravou rotoru (dvojitá klec nebo odporová/hluboká drážka)." },
+            { id: 72, cat: "kap5_4", q: "Proč se používá dvojitá klec na rotoru?", a: "Pro snížení záběrného proudu a současné zvýšení záběrného momentu (změkčení momentové charakteristiky využitím skinefektu – při s = 1 je proud vytlačen do horní rozběhové klece s vyšším odporem z mosazi/bronzu, při pracovních otáčkách teče dolní pracovní klecí z mědi)." },
+            // Kap 5.5
+            { id: 73, cat: "kap5_5", q: "Napište vztah pro řízení otáček as. motoru.", a: "n = ns · (1 - s) = (60 · f₁ / p) · (1 - s)\nOtáčky lze tedy řídit: změnou skluzu s, změnou počtu pólů 2p nebo změnou frekvence f₁." },
+            { id: 74, cat: "kap5_5", q: "Jak můžeme řídit otáčky motoru plynule?", a: "Nejefektivněji změnou frekvence statorového napětí (frekvenčním měničem), případně u kroužkového motoru změnou skluzu (podsynchronní kaskádou nebo plynulým odporníkem)." },
+            { id: 75, cat: "kap5_5", q: "Popište stupňovité řízení otáček.", a: "• U motoru nakrátko: přepínáním počtu pólů statorového vinutí (např. Dahlanderovo zapojení v poměru 1:2 – Y/YY nebo D/YY, případně dvě samostatná vinutí).\n• U kroužkového motoru: vyřazováním a zařazováním rotorového odporu po zvolených stupních." },
+            { id: 76, cat: "kap5_5", q: "Vysvětlete řízení otáček skluzem.", a: "Velikost skluzu a tím i otáček lze měnit:\n1. u kroužkových motorů zařazováním odporu R₂s do rotorového obvodu (nehospodárné, maří se skluzový výkon),\n2. přivedením protinapětí do rotorového obvodu (podsynchronní ventilová kaskáda),\n3. snížením statorového napětí U₁ (moment klesá s U₁²)." },
+            { id: 77, cat: "kap5_5", q: "Jak se dá zvýšit energetická účinnost při řízení otáček skluzem?", a: "Použitím podsynchronní ventilové kaskády (přivedením protinapětí do rotoru), při které se skluzový elektrický výkon nemaří v odporníku na teplo, ale přes usměrňovač a střídač se vrací zpět do napájecí sítě." },
+            { id: 78, cat: "kap5_5", q: "V jakých poměrech se dají regulovat otáčky přepínáním počtu pólů?", a: "Při jednom přepínatelném vinutí (Dahlanderovo zapojení) v poměru 1:2. Při dvou různých samostatných statorových vinutích v takovém poměru, pro který byla tato vinutí vyrobena (např. 1:3, 18 a 24 pólů apod.)." },
+            { id: 79, cat: "kap5_5", q: "Na co musíme pamatovat při řízení otáček změnou frekvence?", a: "Při snižování frekvence pod jmenovitou hodnotu musí zůstávat ve stroji konstantní magnetický tok Φ, aby nedošlo k přesycení obvodu. Proto musí zůstat zachován konstantní poměr U₁ / f₁ = konst. (S výjimkou velmi malých frekvencí pod cca 7–10 Hz, kde se musí napětí zvýšit kvůli úbytku na R₁, a frekvencí nad fn, kde zůstává U₁ = Un konst. a tok i moment klesají s 1/f₁)." },
+            // Kap 5.6
+            { id: 80, cat: "kap5_6", q: "Co je v el. stroji zdrojem prostorových harmonických?", a: "Zdrojem prostorových harmonických je diskrétní uložení vinutí do drážek (stupňové harmonické) a drážkování povrchu statoru a rotoru způsobující kolísání magnetické vodivosti vzduchové mezery (drážkové/zubové harmonické)." },
+            { id: 81, cat: "kap5_6", q: "Odkud se do stroje dostávají časové harmonické?", a: "Z nesinusového napětí napájecí sítě a zejména ze statických polovodičových měničů (frekvenčních měničů)." },
+            { id: 82, cat: "kap5_6", q: "Jaké negativní účinky mají harmonické na činnost stroje?", a: "Vytvářejí parazitní momenty (asynchronní, synchronní, vibrační – sedla v momentové charakteristice), zvyšují přídavné ztráty a oteplení stroje, vyvolávají vibrace a magnetický hluk, namáhají izolaci a zvyšují nebezpečí vzniku ložiskových proudů." },
+            { id: 83, cat: "kap5_6", q: "Vyjmenujte způsoby omezení harmonických.", a: "• Prostorové harmonické omezíme: zkrácením kroku vinutí (např. na 5/6 tp pro potlačení 5. a 7. harm.), rozložením vinutí do více drážek, zešikmením drážek, správnou volbou počtu drážek statoru a rotoru (Q₂ ≤ 1,25·Q₁), magnetickými drážkovými klíny a zvětšením vzduchové mezery.\n• Časové harmonické omezíme: vhodným zapojením a řízením měniče (PWM) a použitím filtrů." },
+            { id: 84, cat: "kap5_6", q: "Jak se vypočítají drážkové harmonické?", a: "Řád drážkových (zubových) harmonických určíme ze vztahu:\nν = c · (Q / p) ± 1 = 2 · m · q · c ± 1\n(kde c = 1, 2, 3...)" },
+            { id: 85, cat: "kap5_6", q: "Které harmonické se ve stroji vyskytují?", a: "• Prostorové harmonické – dané konstrukcí stroje (stupňové, drážkové/zubové, diferenční) – u symetrického 3f vinutí liché harmonické kromě násobků tří: 5., 7., 11., 13. atd.\n• Časové harmonické (a meziharmonické) – obsažené v nesinusovém napájecím napětí a proudu (řád μ = k·p ± 1)." },
+            { id: 86, cat: "kap5_6", q: "Co je to lepení motoru?", a: "Zvláštní případ parazitního synchronního momentu zubových harmonických (zejména když Q₁ = Q₂ nebo Q₁ = Q₂ ± 2p), který působí již při nulových otáčkách (n = 0, s = 1). Jestliže tento parazitní moment převýší záběrný moment, motor se vůbec nerozběhne – tzv. „lepí“." },
+            { id: 87, cat: "kap5_6", q: "Co je zdrojem hluku v el. strojích?", a: "• Magnetický hluk – kmitání feromagnetických částí ve střídavém poli buzené harmonickými (zesílené při mechanické rezonanci).\n• Mechanický hluk – nevyváženost rotoru, ložiska, ventilátor (aerodynamický hluk) a u stejnosměrných strojů kartáče na komutátoru.\nVyšší hluk mají motory napájené ze statických měničů." },
+            // Kap 5.7
+            { id: 88, cat: "kap5_7", q: "Výkon uvedený na štítku motoru je výkon nebo příkon?", a: "Je to jmenovitý mechanický výkon na hřídeli (P)." },
+            { id: 89, cat: "kap5_7", q: "Kdo hradí ztráty při činnosti stroje v generátorickém režimu?", a: "Poháněcí mechanismus (přiváděný mechanický příkon na hřídeli hradí veškeré ztráty ve stroji i elektrický výkon dodávaný do sítě)." },
+            { id: 90, cat: "kap5_7", q: "Jaké ztráty vznikají ve stroji při činnosti jako brzda?", a: "V režimu protiproudové brzdy se do rotoru přenáší jak elektrický výkon točivého pole ze sítě, tak mechanický výkon z hřídele brzděného zařízení, a obojí se v odporu rotoru mění v teplo (Pel = Pδ + P'). Ztráty vznikající při tomto režimu jsou až 3× větší než při rozběhu: (3/2)·J·ω²." },
+            { id: 91, cat: "kap5_7", q: "Jak jde zhospodárnit brždění as. motorů?", a: "Rekuperačním bržděním (přejitím do nadsynchronního generátorického režimu např. snižováním frekvence měničem, kdy se mechanická energie vrací jako elektrická zpět do sítě)." },
+            // Kap 6.1
+            { id: 92, cat: "kap6_1", q: "Jaké druhy synchronních strojů znáte?", a: "Podle konstrukce rotoru rozeznáváme dva základní druhy:\n1. Synchronní stroje s hladkým rotorem (turbogenerátory – rychloběžné, 2 nebo 4 póly)\n2. Synchronní stroje s vyniklými (vyjádřenými) póly (hydrogenerátory – pomaloběžné, mnohapólové)." },
+            { id: 93, cat: "kap6_1", q: "Jaké jsou pracovní stavy synchronních strojů?", a: "Podle způsobu přeměny energie může synchronní stroj pracovat jako:\n• generátor (alternátor),\n• motor,\n• synchronní kompenzátor (chod naprázdno pro dodávku/odběr jalové energie).\nV provozu může pracovat naprázdno, nakrátko nebo při zatížení (v přebuzeném či podbuzeném stavu)." },
+            { id: 94, cat: "kap6_1", q: "Definujte rozsah výkonů, napětí a počtu pólů synchronních strojů.", a: "• Výkony: od několika wattů (speciální motorky) až do 1000 MW / MVA a více (např. Temelín 1000 MW).\n• Napětí: u velkých alternátorů běžně 6 až 35 kV (typicky do 25 kV).\n• Počet pólů: stroje s hladkým rotorem jsou 2- a 4pólové; stroje s vyniklými póly jsou mnohapólové (např. vodní dílo Gabčíkovo má 88 pólů)." },
+            { id: 95, cat: "kap6_1", q: "Vysvětlete princip působení synchronních strojů.", a: "V synchronním stroji působí dvě magnetická napětí: jedno vybuzené stejnosměrným proudem v rotoru (budičem) a druhé vybuzené vícefázovými proudy ve statoru.\nOtáčející se pole rotoru indukuje ve statoru napětí ui = b·l·v o frekvenci f = p·n/60. Při zatížení vytvoří třífázový proud statoru točivé magnetické pole, které se otáčí shodnou (synchronní) rychlostí s rotorem. Obě pole se vzájemně přitahují a při zatížení jsou jejich osy vůči sobě pootočeny o zátěžný úhel β (M ~ Fm1·Fm2·sin β)." },
+            // Kap 6.2
+            { id: 96, cat: "kap6_2", q: "Jaká mg. pole vznikají v synchronním stroji?", a: "Vzniká hlavní budicí magnetické pole vytvořené budicím vinutím rotoru (nebo permanentními magnety) a při zatížení vzniká reakční magnetické pole kotvy (statoru), které u vyniklých pólů rozkládáme do podélné osy (d) a příčné osy (q)." },
+            { id: 97, cat: "kap6_2", q: "Jaký je tvar mg. polí v synchronním stroji?", a: "• U stroje s hladkým rotorem je prostorové rozložení magnetického pole podél vzduchové mezery lichoběžníkové se stupňovitými stranami.\n• U stroje s vyniklými póly závisí průběh indukce na tvaru pólového nástavce (tzv. sinusová vzduchová mezera δmax = 1,5·δ) a poměrném oblouku α – při konstantní mezeře se blíží obdélníku, tvarováním nástavce sinusovce." },
+            { id: 98, cat: "kap6_2", q: "Určete velikost vzduchové mezery v synchronním stroji.", a: "Vzduchová mezera je podstatně větší než u asynchronních strojů a bývá 0,5 až 5 cm (volí se tak, aby byl zajištěn spolehlivý mechanický chod, omezena reakce kotvy a přídavné ztráty a zajištěna stabilita)." },
+            // Kap 6.3
+            { id: 99, cat: "kap6_3", q: "Vysvětlete co považujeme za chod synchronního stroje naprázdno.", a: "Synchronní stroj je v chodu naprázdno, jestliže se otáčí jmenovitými synchronními otáčkami, je buzen, ale jeho statorové svorky jsou rozpojeny (I₁ = 0) – z generátoru není odebírán elektrický výkon a moment motoru je nulový." },
+            { id: 100, cat: "kap6_3", q: "Uveďte postup při měření charakteristiky naprázdno.", a: "Charakteristika naprázdno je závislost svorkového napětí U₁ na budicím proudu Ib při I₁ = 0 a jmenovitých otáčkách n = konst. Při měření roztočíme stroj na jmenovité otáčky, budicí proud nejdříve postupně zvyšujeme a pak snižujeme a měříme svorkové napětí. Dostaneme hysterezní smyčku a charakteristika naprázdno je její střední čára." },
+            { id: 101, cat: "kap6_3", q: "Pro kterou část stroje je mg. napětí největší?", a: "Magnetické napětí je největší pro vzduchovou mezeru (spotřebuje 60–80 % celkového budicího magnetického napětí)." },
+            // Kap 6.4
+            { id: 102, cat: "kap6_4", q: "Popište zkoušku synchronního stroje nakrátko.", a: "Zkratujeme svorky statorového vinutí, roztočíme stroj na jmenovité otáčky a od nuly postupně opatrně zvyšujeme budicí proud Ib, až statorovým vinutím protéká jmenovitý proud In (příp. krátce 1,2·In). Závislost statorového proudu I₁k na budicím proudu Ib je charakteristika nakrátko." },
+            { id: 103, cat: "kap6_4", q: "Jak se liší proud při chodu stroje nakrátko od proudu při zkratu?", a: "Při zkoušce chodu nakrátko je stroj jen slabě buzen, takže statorový proud je na úrovni proudu jmenovitého. Při náhlém zkratu plně nabuzeného stroje na jmenovité napětí teče strojem přechodný proud mnohonásobně (až 20×) převyšující proud jmenovitý." },
+            { id: 104, cat: "kap6_4", q: "Proč má charakteristika nakrátko přímkový průběh?", a: "Protože zkratový proud je čistě jalový (induktivní), takže reakce kotvy působí přesně v podélné ose proti poli magnetů (odbuzuje). Výsledný magnetický tok ve stroji je velmi malý (jen 10–15 % toku naprázdno pro krytí rozptylového úbytku X₁σ·Ik), a stroj proto pracuje v nenasyceném (lineárním) stavu." },
+            { id: 105, cat: "kap6_4", q: "Z čeho se skládá synchronní reaktance?", a: "Synchronní reaktance (Xd) je součtem reaktance reakce kotvy (Xr, resp. Xrd) a rozptylové reaktance statorového vinutí (X₁σ):\nXd = Xr + X₁σ" },
+            { id: 106, cat: "kap6_4", q: "Jaký význam má synchronní reaktance?", a: "Synchronní reaktance je hlavní parametr synchronního stroje v ustáleném stavu. Určuje úbytek napětí při zatížení, převrácená hodnota poměrné sycené reaktance udává zkratový poměr (k = 1 / xds) a má přímý vliv na velikost momentu, přetížitelnost a statickou stabilitu stroje." },
+            // Kap 6.5
+            { id: 107, cat: "kap6_5", q: "Kdy pracuje stroj jako motor a kdy jako generátor?", a: "• Jako motor pracuje, jestliže ze sítě odebírá činnou elektrickou energii (rotor se zpožďuje za polem statoru o zátěžný úhel β).\n• Jako generátor pracuje, když je poháněn a do sítě dodává činnou elektrickou energii (rotor předbíhá pole statoru o zátěžný úhel β)." },
+            { id: 108, cat: "kap6_5", q: "Co je to přebuzený a co podbuzený stav synchronního stroje?", a: "• V přebuzeném stavu stroj dodává do sítě jalovou induktivní energii (chová se vůči síti jako kondenzátor).\n• V podbuzeném stavu stroj jalovou energii ze sítě odebírá (chová se jako tlumivka)." },
+            { id: 109, cat: "kap6_5", q: "K jakému účelu slouží synchronní kompenzátor?", a: "Synchronní kompenzátor (synchronní motor v chodu naprázdno bez mechanické zátěže na hřídeli) slouží k plynulé regulaci jalového výkonu, zlepšování účiníku (cos φ) a zvyšování napěťové stability přenosové sítě." },
+            { id: 110, cat: "kap6_5", q: "Nakreslete a popište fázorový diagram motoru s hladkým rotorem.", a: "Platí rovnice: Uf = Ub + (R₁ + jX₁σ + jXr)·I₁ = Ub + (R₁ + jXd)·I₁.\n• U motoru se fázor vnitřního buzeného napětí Ub vždy zpožďuje za fázorem svorkového napětí Uf o zátěžný úhel β.\n• U přebuzeného motoru proud I₁ předbíhá napětí Uf (dodává jalový výkon), u podbuzeného motoru se proud I₁ zpožďuje za Uf." },
+            { id: 111, cat: "kap6_5", q: "Nakreslete a popište fázorový diagram generátoru s vyniklými póly.", a: "U stroje s vyniklými póly je rozdílná magnetická vodivost v podélné ose (d) a příčné ose (q), proto se proud I₁ i reakce kotvy rozkládá na dvě složky: Id = I·sin ψ a Iq = I·cos ψ.\nPlatí napěťová rovnice:\nUb = Uf + R₁·I + jX₁σ·I + jXrq·Iq + jXrd·Id\nU generátoru fázor vnitřního napětí Ub předbíhá svorkové napětí Uf o zátěžný úhel β." },
+            // Kap 6.6
+            { id: 112, cat: "kap6_6", q: "Zdůvodněte nutnost změny buzení při zatížení stroje.", a: "Při změnách zatížení se mění velikost a směr reakčního pole kotvy (Fr) i úbytek na rozptylové reaktanci. Aby výsledné pole ve stroji a svorkové napětí U₁ zůstávalo konstantní (nebo se udržel požadovaný účiník), musí se buzení Fb měnit v závislosti na velikosti a charakteru zatížení." },
+            { id: 113, cat: "kap6_6", q: "Co je to Potierova reaktance?", a: "Potierova reaktance (Xp) je fiktivní statorová reaktance zjištěná pomocí Potierova trojúhelníku z charakteristiky naprázdno a indukční charakteristiky (při cos φ = 0), sloužící ke grafickému stanovení potřebného budicího proudu u nasyceného stroje." },
+            { id: 114, cat: "kap6_6", q: "Proč je Potierova reaktance větší než rozptylová reaktance statorového vinutí?", a: "Potierova reaktance Xp je o 20–30 % větší než skutečná rozptylová reaktance statoru X₁σ, protože zahrnuje nejen rozptyl statorového vinutí, ale i zvýšený rozptylový tok budicího vinutí rotoru při nasycení pólů." },
+            // Kap 6.7
+            { id: 115, cat: "kap6_7", q: "Čím regulujeme napětí u generátoru pracujícího samostatně?", a: "Svorkové napětí u samostatně pracujícího generátoru (v ostrovním provozu) regulujeme změnou budicího proudu Ib." },
+            { id: 116, cat: "kap6_7", q: "Co se mění při změně otáček samostatně pracujícího generátoru?", a: "Při změně otáček se mění frekvence statorového napětí (f = p·n / 60) a současně i velikost indukovaného napětí." },
+            { id: 117, cat: "kap6_7", q: "Co je to zatěžovací charakteristika?", a: "Zatěžovací (vnější) charakteristika je závislost svorkového napětí Uf na zatěžovacím proudu statoru I₁, tedy Uf = f(I₁) při konstantním budicím proudu Ib, otáčkách n a účiníku cos φ. Při induktivní zátěži napětí klesá, při kapacitní zátěži stoupá." },
+            { id: 118, cat: "kap6_7", q: "Jakým způsobem můžeme měnit jalový výkon u generátoru pracujícího v síti?", a: "Změnou budicího proudu Ib (přebuzený dodává jalový výkon do sítě, podbuzený jej ze sítě odebírá)." },
+            { id: 119, cat: "kap6_7", q: "Jak můžeme zvýšit činný výkon dodávaný generátorem do sítě?", a: "Pouze změnou mechanického výkonu (točivého momentu) dodávaného pohonným zařízením – např. otevřením přívodu páry či vody do turbíny (zvětší se zátěžný úhel β)." },
+            { id: 120, cat: "kap6_7", q: "Z jakého vztahu vycházejí V-křivky?", a: "V-křivky udávají závislost statorového proudu na budicím proudu I₁ = f(Ib) a vycházejí ze vztahu pro konstantní činný výkon na tvrdé síti:\nP₁ = m₁ · U₁ · I₁ · cos φ₁ = konst.\n(Minima V-křivek leží na křivce cos φ = 1)." },
+            // Kap 6.8
+            { id: 121, cat: "kap6_8", q: "Co je to fázování?", a: "Fázování je proces sepnutí dvou nesynchronních dílů sítě nebo připojení synchronního generátoru k síti v tom stavu a okamžiku, kdy okamžité hodnoty napětí fázovaného stroje a sítě jsou shodné co do velikosti, kmitočtu, sledu fází i úhlového natočení (us = ug), aby nevznikl proudový a momentový ráz." },
+            { id: 122, cat: "kap6_8", q: "Jaké jsou podmínky pro správné fázování?", a: "Musí být splněny 4 podmínky:\n1. Stejná velikost napětí stroje a sítě (Ug = Us)\n2. Stejný kmitočet stroje a sítě (ωg = ωs, fg = fs)\n3. Minimální (nulový) fázový posun mezi napětím stroje a sítě\n4. Stejný sled fází generátoru a sítě." },
+            { id: 123, cat: "kap6_8", q: "Vysvětlete fázování na tmu.", a: "Při fázování na tmu jsou tři dvojice žárovek zapojeny mezi stejnojmenné fáze stroje a sítě. Žárovky se současně rozsvěcují a zhasínají s kmitočtem rozdílu frekvencí. V okamžiku, kdy jsou všechny žárovky zcela zhaslé (pohaslé), je rozdílové napětí nulové, jsou splněny fázovací podmínky a výkonový vypínač lze sepnout." },
+            { id: 124, cat: "kap6_8", q: "Při nesouhlasném napětí generátoru a sítě nastane při připojení k síti ráz činné nebo jalové energie?", a: "Nastane ráz jalové energie (vyrovnávací jalový proud)." },
+            { id: 125, cat: "kap6_8", q: "Při různých frekvencích generátoru a sítě vznikne ráz jalové nebo činné energie?", a: "Nastane nebezpečný ráz činné energie (hmota rotoru se musí skokově urychlit nebo zpomalit, což mechanicky namáhá hřídel a turbínu; totéž platí při fázovém úhlovém nesouhlasu)." },
+            // Kap 6.9
+            { id: 126, cat: "kap6_9", q: "Jaké druhy zkratů mohou vzniknout v synchronním stroji?", a: "• Souměrný třífázový zkrat\n• Nesouměrné zkraty: jednofázový zkrat, dvoufázový zkrat, zemní zkrat (fáze na kostru)\n• Z hlediska vinutí: mezifázový zkrat, závitový zkrat (statoru nebo buzení) a zkrat budicího vinutí na kostru." },
+            { id: 127, cat: "kap6_9", q: "Jaký je průběh proudu po vzniku třífázového souměrného zkratu?", a: "V prvním okamžiku zkratu vznikne velký rázový proud (až 20× In), který má složku stejnosměrnou (zaniká s časovou konstantou statoru Ta) a složku střídavou. Amplituda střídavé složky klesá z počátečního druhého přechodného proudu I''km (tlumič, čas. konstanta T''d) na první přechodný proud I'km (budicí vinutí, čas. konstanta T'd) až na ustálený zkratový proud Ikm (nepřesáhne cca 2·In)." },
+            { id: 128, cat: "kap6_9", q: "Jaké jsou rozdíly při zkratu jedno-, dvou- a třífázovém?", a: "U dvoupólového zkratu je počáteční amplituda střídavé složky 0,866·Ikmax třífázového zkratu, ale ustálený proud je √3× (ve skriptech uvedeno až 3×) větší než Ikm. U jednofázového zkratu je počáteční amplituda stejná jako u 3f, ale ustálený proud nakrátko je při stejném buzení největší – až 3× Ikm." },
+            { id: 129, cat: "kap6_9", q: "Jaké jsou účinky zkratových proudů?", a: "Zkratové proudy vyvolávají jednak obrovské dynamické (mechanické) síly, které namáhají čela vinutí, hřídel a konstrukční části stroje (rozhodující je rázový proud I''vm), a jednak velké tepelné ztráty (Jouleovo teplo), které nebezpečně oteplují vinutí (rozhodující je ustálený zkratový proud)." },
+            { id: 130, cat: "kap6_9", q: "Co je to první přechodná reaktance?", a: "První přechodná reaktance (X'd) je rozptylová reaktance statoru X₁σ zvětšená o paralelně spojenou reaktanci podélné reakce kotvy Xrd s rozptylovou reaktancí budicího vinutí Xb:\nX'd = X₁σ + (Xrd · Xb) / (Xrd + Xb)" },
+            { id: 131, cat: "kap6_9", q: "Jak vysvětlíte druhou přechodnou reaktanci?", a: "Druhá přechodná (rázová) reaktance (X''d) uvažuje navíc účinek tlumícího vinutí v prvním okamžiku zkratu – je to rozptylová reaktance statorového vinutí X₁σ zvětšená o paralelní kombinaci reaktance reakce Xrd, rozptylové reaktance budicího vinutí Xb a rozptylové reaktance tlumícího vinutí Xt (platí X''d < X'd < Xd)." },
+            // Kap 6.10
+            { id: 132, cat: "kap6_10", q: "Co můžeme vyčíst z kruhového diagramu synchronního stroje?", a: "Hranice možné zatížitelnosti stroje, velikost činného a jalového výkonu, účiník cos φ, zátěžný úhel β, potřebný budicí proud a mez statické stability (přetížitelnost) stroje." },
+            { id: 133, cat: "kap6_10", q: "Jaká jsou omezení pro velikost zatížení strojů?", a: "Zatížení stroje je omezeno trvalou nepřekročitelností štítkových jmenovitých hodnot (zejména dovoleným oteplením vinutí statoru I₁n a rotoru Ibn) a mezí statické stability (β = 90°)." },
+            // Kap 6.11
+            { id: 134, cat: "kap6_11", q: "Definujte rozdíl mezi statickým a dynamickým stavem synchronního stroje.", a: "• Statický (ustálený) stav – nedochází ke změnám kinetické energie systému (nebo dochází jen k nekonečně pomalým změnám zatížení, kvazistatický přechod bez kyvů rotoru).\n• Dynamický stav – je charakterizovaný rychlými periodickými změnami kinetické energie systému a velkými kyvy rotoru během rázového poruchového děje." },
+            { id: 135, cat: "kap6_11", q: "Nakreslete a popište momentovou charakteristiku stroje s hladkým rotorem.", a: "Moment stroje s hladkým rotorem má čistě sinusový průběh v závislosti na zátěžném úhlu β:\nM = [ (m · p · Uf · Ub) / (2π · f · Xd) ] · sin β = Mmax · sin β\nMaximální moment (mez statické stability) nastává při zátěžném úhlu β = +π/2 (90°) pro motor a β = -π/2 (-90°) pro generátor." },
+            { id: 136, cat: "kap6_11", q: "Nakreslete a popište momentovou charakteristiku stroje s vyniklými póly.", a: "Moment stroje s vyniklými póly obsahuje kromě základní harmonické sin β ještě druhou harmonickou sin 2β (tzv. reluktanční moment daný tím, že Xd > Xq):\nM = M₁max · sin β + M₂max · sin 2β\nVýsledná křivka je strmější, má vyšší maximální moment zvratu, ale mez statické stability se posouvá k menšímu úhlu β < π/2 (cca 65°–75°)." },
+            { id: 137, cat: "kap6_11", q: "Definujte mez statické stability u stroje s vyniklými póly a hladkým rotorem.", a: "• U stroje s hladkým rotorem je mez statické stability dána zátěžným úhlem β = π/2 (90° el.).\n• U stroje s vyniklými póly je vlivem reluktanční složky sin(2β) maximální moment větší, ale mez statické stability leží při menším úhlu β < π/2.\nPři překročení této meze stroj vypadne ze synchronismu (alternátor proběhne, motor se zastaví)." },
+            { id: 138, cat: "kap6_11", q: "Jak se liší moment synchronního stroje v závislosti na svorkovém napětí od momentu asynchronního motoru?", a: "• U synchronního stroje je moment přímo úměrný (lineárně závislý) svorkovému napětí: M ~ Uf.\n• U asynchronního motoru se moment mění s druhou mocninou napětí: M ~ U₁²." },
+            { id: 139, cat: "kap6_11", q: "Co je to reluktanční moment?", a: "Je to přídavná složka momentu (úměrná sin 2β a rozdílu 1/Xq - 1/Xd), která vzniká u synchronního stroje s vyniklými póly v důsledku rozdílné magnetické vodivosti (reluktance) v podélném (d) a příčném (q) směru rotoru." },
+            { id: 140, cat: "kap6_11", q: "Může synchronní stroj vyvíjet moment aniž by byl buzen?", a: "Ano, může, pokud má rotor s vyniklými póly – vyvíjí pak reluktanční moment, jehož velikost není závislá na stejnosměrném buzení rotoru (využívá se u reluktančních motorů)." },
+            // Kap 6.12
+            { id: 141, cat: "kap6_12", q: "Určete výhody a nevýhody synchronních motorů.", a: "• Výhody: nepotřebují odebírat ze sítě jalový výkon a v přebuzeném stavu jsou naopak zdrojem jalového výkonu (kompenzují účiník), konstantní otáčky nezávislé na zatížení, moment klesá jen lineárně s napětím, odpadají skluzové ztráty (vyšší účinnost), velká vzduchová mezera.\n• Nevýhody: komplikovaný rozběh, nutnost zdroje stejnosměrného buzení, menší momentová přetížitelnost a vyšší pořizovací cena." },
+            { id: 142, cat: "kap6_12", q: "Srovnejte vlastnosti synchronního a asynchronního motoru.", a: "Synchronní motor udržuje konstantní otáčky n = ns bez skluzu a skluzových ztrát, potřebuje však stejnosměrné buzení (nebo PM), zatímco asynchronní motor si bere magnetizační proud ze sítě. Moment u AS závisí na U², u SS jen lineárně na U. Třífázový asynchronní motor se sám rozběhne po připojení k síti, zatímco synchronní motor bez pomocného opatření nikoliv." },
+            { id: 143, cat: "kap6_12", q: "Jaké jsou způsoby spouštění synchronních motorů?", a: "1. Asynchronní rozběh pomocí rozběhového vinutí (amortizéru) na rotoru:\n   • přímým připojením na síť\n   • spouštěním přes reaktor (tlumivku)\n   • spouštěním autotransformátorem\n2. Rozběh plynulou změnou kmitočtu napájecího napětí (frekvenčním měničem)\n3. Roztočení pomocným hnacím motorem." },
+            { id: 144, cat: "kap6_12", q: "Popište průběh spouštění asynchronním rozběhem.", a: "Motor je na rotoru vybaven klecovým rozběhovým vinutím (amortizérem) v pólových nástavcích.\n1. Nenabuzený motor připojíme k síti; budicí vinutí musí být zkratováno přes ochranný odpor (5–10)·Rb, aby se v něm neindukovalo nebezpečně vysoké napětí.\n2. Rotor se urychluje asynchronním momentem klece až na cca 95 % synchronních otáček.\n3. Poté se připojí stejnosměrné buzení a motor se synchronizačním momentem vtáhne do synchronismu." },
+            { id: 145, cat: "kap6_12", q: "Jaké druhy synchronních motorků znáte a kde se používají?", a: "Používají se v automatizaci, regulační a záznamové technice, hodinách a robotech (od setin W do několika kW).\nDruhy podle konstrukce:\n• motory reluktanční (reakční)\n• motory s permanentními magnety (a hybridní)\n• hysterezní motorky.\nPodle druhu pohybu: točivé nebo krokové." },
+            { id: 146, cat: "kap6_12", q: "Popište reluktanční motor.", a: "Je to synchronní motor s vyjádřenými póly na rotoru (odfrézované části pro velký rozdíl vodivosti v ose d a q) bez budicího vinutí. Po připojení statoru na napětí se rotor orientuje do polohy minimálního magnetického odporu (reluktance), čímž vznikají tangenciální síly a reluktanční moment otáčející rotorem synchronně s polem statoru." },
+            { id: 147, cat: "kap6_12", q: "Vysvětlete účel a použití kompenzátorů.", a: "Synchronní kompenzátor je synchronní motor běžící naprázdno (bez mechanické zátěže, často bez vyvedeného konce hřídele). Ze sítě odebírá jen malý činný výkon na krytí vlastních ztrát a změnou buzení dodává do sítě (přebuzený – jako kondenzátor) nebo ze sítě odebírá (podbuzený – jako tlumivka) jalový výkon. Slouží ke zlepšování účiníku a regulaci napětí v rozvodnách." },
+            { id: 148, cat: "kap6_12", q: "Může synchronní stroj pracovat jako krokový motor?", a: "Ano, krokové motory pracují běžně na principu synchronních motorů (postupným přiváděním proudových impulsů do jednotlivých fází statoru)." },
+            // Kap 6.13
+            { id: 149, cat: "kap6_13", q: "Jak se mění zátěžný úhel stroje při změnách zatížení?", a: "Se stoupajícím zatížením zátěžný úhel β roste (při jmenovitém zatížení bývá kolem 30° el.). Nesmí však být překročena mez stability." },
+            { id: 150, cat: "kap6_13", q: "Co je příčinou kývání synchronních strojů?", a: "Náhlé změny zatížení, poruchové a havarijní stavy v síti nebo nerovnoměrný chod hnacího stroje (rotor vlivem momentu setrvačnosti překývne novou rovnovážnou polohu zátěžného úhlu a synchronizační moment jej vrací zpět; kývání je tlumené tlumičem – amortizérem)." },
+            { id: 151, cat: "kap6_13", q: "Jaká je mez dynamické stability strojů?", a: "Mez dynamické stability je větší než statická (β > π/2) a přechodně může zátěžný úhel dosahovat až 150°–170° (téměř π). Posuzuje se pomocí kritéria stejných ploch (urychlující práce W₁ se musí rovnat brzdící práci W₂)." },
+            // Kap 6.14
+            { id: 152, cat: "kap6_14", q: "Vysvětlete závislý a nezávislý budicí systém.", a: "• Nezávislý budicí systém – zdroj budicí energie není závislý na stavu elektrické sítě, ke které je připojen synchronní stroj (např. stejnosměrný či střídavý budič přímo na hřídeli soustrojí).\n• Závislý budicí systém – odebírá budicí energii přes transformátor a řízený usměrňovač ze střídavé sítě, ke které je stroj připojen, takže je závislý na napěťovém stavu této sítě." },
+            { id: 153, cat: "kap6_14", q: "Jaké jsou důvody použití statických měničů v budicích systémech?", a: "• Rozvoj výkonové polovodičové elektroniky a regulační techniky\n• Snaha odstranit stejnosměrné komutační stroje (budiče s komutátorem mají omezený výkon při 3000 min⁻¹) a případně i kluzný kontakt (rotační diodové/tyristorové usměrňovače – bezkartáčové buzení)\n• Velmi rychlá odezva buzení (T₀ < 0,1 s oproti 1,5 s u klasických), která výrazně zvyšuje stabilitu velkých bloků." },
+            { id: 154, cat: "kap6_14", q: "Jaký je výkon budicí soustavy ve srovnání s výkonem stroje?", a: "Budicí příkon synchronního stroje činí přibližně 0,5 až několik procent (cca 0,5–3 %) jmenovitého výkonu stroje (u velkých turboalternátorů i přes 500 kW až jednotky MW)." },
+            // Kap 7.1
+            { id: 155, cat: "kap7_1", q: "Proč byly stejnosměrné stroje v minulosti hojně rozšířeny?", a: "Pro své vynikající regulační vlastnosti (snadná a plynulá regulace otáček v širokém rozsahu kotevním napětím a buzením, velký záběrný moment při malých otáčkách a vysoká přetížitelnost)." },
+            { id: 156, cat: "kap7_1", q: "Vyjmenujte základní části stejnosměrných strojů.", a: "• Stator: magnetické jho (kostra), hlavní póly s budicím vinutím (a v nástavcích kompenzačním vinutím), pomocné (komutační) póly s vinutím.\n• Rotor (kotva): drážkovaný magnetický obvod z plechů s kotevním vinutím, komutátor z měděných lamel, hřídel.\n• Ostatní části: sběrací ústrojí s uhlíkovými kartáči, ložiskové štíty a ložiska." },
+            { id: 157, cat: "kap7_1", q: "Jaké jsou mezní výkony a napětí stejnosměrných strojů?", a: "Maximální výkony stejnosměrných strojů jsou okolo 5 až 7 MW při nízkých otáčkách (cca 100–180 min⁻¹). Nejvyšší jmenovité napětí je omezeno komutátorem na cca 1200 V." },
+            // Kap 7.2
+            { id: 158, cat: "kap7_2", q: "Jak funguje komutátor u dynama?", a: "U dynama má komutátor společně s kartáči funkci mechanického usměrňovače – střídavé napětí indukované v rotujících cívkách kotvy usměrňuje na stejnosměrné napětí na stojících kartáčích." },
+            { id: 159, cat: "kap7_2", q: "Jakou funkci plní komutátor u motoru?", a: "U motoru plní funkci mechanického střídače (měniče kmitočtu) – mění přiváděný stejnosměrný proud z kartáčů na střídavý proud ve vodičích rotující kotvy tak, aby pod daným pólem tekl vodiči proud vždy stejného směru a motor vyvíjel stálý točivý moment." },
+            { id: 160, cat: "kap7_2", q: "K čemu slouží kartáče?", a: "Zprostředkovávají kluzným kontaktem přívod nebo odběr proudu mezi stojící částí a rotujícím komutátorem, zkratují komutující cívky v době komutace a svým přechodovým odporem pomáhají zvládnout zbytkové napětí při komutaci." },
+            { id: 161, cat: "kap7_2", q: "Jaké napětí se indukuje v rotoru ss stroje?", a: "Ve vodičích (cívkách) rotoru stejnosměrného stroje se indukuje střídavé napětí o frekvenci:\nf = p · n  (kde n jsou otáčky za sekundu, resp. f = p·n / 60 pro min⁻¹)." },
+            // Kap 7.3
+            { id: 162, cat: "kap7_3", q: "Z jakého vztahu vycházíme při odvození indukovaného napětí stejnosměrného stroje?", a: "Základním vztahem je pohybové indukované napětí jednoho vodiče v magnetickém poli:\nu = B · lž · v\nCelkové indukované napětí kotvy je pak:\nUi = (p / a) · Nv · Φ₀ · n = k · Φ₀ · ωm" },
+            { id: 163, cat: "kap7_3", q: "Kterými parametry můžeme měnit napětí u dynama?", a: "Velikost indukovaného napětí je dána vztahem Ui = c · Φ · n, na hotovém stroji ji tedy můžeme měnit budicím proudem (který mění magnetický tok Φ) a otáčkami n." },
+            { id: 164, cat: "kap7_3", q: "Na čem je závislé svorkové napětí u motoru?", a: "Velikost svorkového napětí U u motoru je dána napětím napájecí sítě nebo regulovatelného zdroje (usměrňovače) a platí rovnováha:\nU = Ui + R · Ia" },
+            { id: 165, cat: "kap7_3", q: "Uveďte vztah pro moment stejnosměrného motoru.", a: "Elektromagnetický moment stejnosměrného stroje je přímo úměrný magnetickému toku a proudu kotvy:\nM = [ (p · Nv) / (2π · a) ] · Φ₀ · Ia = k · Φ₀ · Ia" },
+            // Kap 7.4
+            { id: 166, cat: "kap7_4", q: "Vyjmenujte části mg. obvodu stejnosměrného stroje.", a: "Magnetický tok se ve stejnosměrném stroji uzavírá obvodem tvořeným 6 úseky:\n1. jádro hlavního pólu\n2. pólový nástavec\n3. vzduchová mezera\n4. zuby kotvy (rotoru)\n5. jho kotvy (rotoru)\n6. statorové jho." },
+            { id: 167, cat: "kap7_4", q: "Jak změříte charakteristiku naprázdno ss stroje?", a: "Charakteristika naprázdno U₀ = f(Ib) se měří při konstantních jmenovitých otáčkách stroje a rozpojeném obvodu kotvy (Ia = 0, bez zatížení). Měníme budicí proud Ib a měříme svorkové napětí U₀." },
+            { id: 168, cat: "kap7_4", q: "Napište vztah pro budicí mg. napětí.", a: "Fb = Nb · Ib\n(kde Nb je počet závitů budicího vinutí a Ib je budicí proud)." },
+            // Kap 7.5
+            { id: 169, cat: "kap7_5", q: "Vysvětlete reakci kotvy u stejnosměrného stroje.", a: "Při zatížení stroje protéká vinutím kotvy proud Ia, který vytváří své vlastní magnetické pole kolmé na osu hlavních pólů (příčné pole v ose kartáčů). Toto pole a jeho působení na hlavní magnetické pole nazýváme reakcí kotvy." },
+            { id: 170, cat: "kap7_5", q: "Zdůvodněte negativní působení reakce kotvy.", a: "Pole reakce kotvy se skládá s polem hlavních pólů a výsledné pole deformuje:\n1. Posouvá magneticky neutrální pásmo (u dynama ve směru otáčení, u motoru proti směru otáčení), což zhoršuje komutaci a způsobuje jiskření.\n2. Vlivem nasycení železa pod jednou hranou pólu má celkově demagnetizační (odbuzující) účinek – snižuje celkový tok Φ.\n3. Zvyšuje maximální lamelové napětí pod přesycenou hranou pólu." },
+            { id: 171, cat: "kap7_5", q: "Vysvětlete funkci kompenzačního vinutí.", a: "Kompenzační vinutí (uložené v drážkách pólových nástavců hlavních pólů a zapojené do série s kotvou tak, aby jím tekl proud opačným směrem než ve vodičích kotvy) vyruší magnetické pole reakce kotvy pod hlavními póly a zrovnoměrňuje magnetické pole ve vzduchové mezeře." },
+            // Kap 7.6
+            { id: 172, cat: "kap7_6", q: "Co je to komutace?", a: "Komutace je přechodový děj v cívce vinutí kotvy při jejím postupném přepínání z jedné paralelní větve do druhé (změna směru proudu z +I na -I), během něhož je cívka nakrátko spojena kartáčem na komutátoru." },
+            { id: 173, cat: "kap7_6", q: "Vysvětlete dobu komutace cívky.", a: "Doba komutace cívky (Tk) je krátký časový interval (řádově ms), během něhož jsou sousední lamely, na kterých komutující cívka začíná a končí, spojeny kartáčem nakrátko:\nTk = bk / vk  (šířka kartáče dělená obvodovou rychlostí komutátoru)." },
+            { id: 174, cat: "kap7_6", q: "Kde se musí nacházet cívka v době komutace?", a: "V době komutace se musí cívka nacházet v geometrické neutrále – v prostoru mezi hlavními póly, kde je u stroje bez pomocných pólů nulové magnetické pole (aby se v ní neindukovalo napětí od hlavních pólů), případně kde působí komutační pole pomocných pólů." },
+            { id: 175, cat: "kap7_6", q: "Proč vzniká reaktanční napětí?", a: "Vznik reaktančního napětí (ur = -Lc · di/dt ≈ Lc · 2I / Tk) je zapříčiněn vlastní a vzájemnou indukčností (rozptylovým magnetickým tokem) komutující cívky, ve které se během velmi krátké doby komutace Tk prudce mění proud z +I na -I. Podle Lenzova zákona brání změně proudu." },
+            { id: 176, cat: "kap7_6", q: "Jaké mohou být průběhy proudu v době komutace cívky a proč?", a: "1. Přímková (ideální) komutace – při zanedbání indukčnosti cívky nebo při přesné kompenzaci ur = uk; proud se mění lineárně.\n2. Zpožděná komutace (podkomutovaný stroj) – vlivem nekompenzovaného reaktančního napětí ur se proud zpočátku mění pomalu a na konci komutace velmi strmě, což způsobuje jiskření pod odstupující hranou kartáče.\n3. Zrychlená komutace (překomutovaný stroj) – při příliš silném poli pomocných pólů (uk > ur) se proud změní příliš rychle." },
+            { id: 177, cat: "kap7_6", q: "Jaká je maximální velikost reaktančního napětí?", a: "U strojů bez pomocných pólů nesmí velikost reaktančního napětí překročit cca 2 až 3 V (zvládne přechodový odpor kartáčů), u strojů s pomocnými póly může dosáhnout až 17–20 V." },
+            // Kap 7.7
+            { id: 178, cat: "kap7_7", q: "Jakými způsoby se omezuje (kompenzuje) reaktanční napětí?", a: "1. Pomocnými (komutačními) póly umístěnými v geometrické neutrále mezi hlavními póly, které indukují do cívky opačné komutační napětí uk.\n2. U malých strojů bez pomocných pólů vytočením kartáčů z neutrální polohy (u dynama ve směru otáčení, u motoru proti směru otáčení)." },
+            { id: 179, cat: "kap7_7", q: "Co je důležité při konstrukci pomocných pólů?", a: "Vinutí pomocných pólů musí být zapojeno do série s kotvou (aby komutační pole bylo vždy úměrné proudu kotvy Ia) a v magnetickém obvodu pomocných pólů nesmí docházet k přesycení ani při přetížení – proto se vzduchová mezera pod pomocným pólem volí větší než pod hlavním pólem." },
+            { id: 180, cat: "kap7_7", q: "Jakou polaritu mají pomocné póly vzhledem k pólům hlavním?", a: "Ve směru otáčení kotvy:\n• U motoru následuje za hlavním pólem pomocný pól STEJNÉ polarity (za severním hlavním severní pomocný).\n• U dynama následuje za hlavním pólem pomocný pól OPAČNÉ polarity (za severním hlavním jižní pomocný)." },
+            // Kap 7.8
+            { id: 181, cat: "kap7_8", q: "Co je příčinou rychlých proudových změn při činnosti stejnosměrného motoru?", a: "Rychlé proudové změny jsou vyvolány buď dynamickými regulačními pochody elektrických pohonů (záběry, reverzace) nebo zvlněným proudem při napájení motorů ze statických polovodičových měničů (usměrňovačů)." },
+            { id: 182, cat: "kap7_8", q: "Jaké konstrukční provedení musí mít motor, který je určen pro napájení zvlněným proudem?", a: "Celý magnetický obvod takového motoru (včetně statorového jha, hlavních i pomocných pólů) musí být složen ze vzájemně izolovaných elektrotechnických plechů (lištěný) a v konstrukci nesmí být žádná část tvořící závit nakrátko, aby vířivé proudy nezpožďovaly komutační tok pomocných pólů." },
+            { id: 183, cat: "kap7_8", q: "Co se indukuje v komutující cívce při napájení zvlněným proudem?", a: "Při napájení zvlněným (pulzujícím) proudem se v komutující cívce indukuje kromě reaktančního a komutačního napětí také transformační napětí (utr = 2π·f·Nc·Φm) od pulzujícího hlavního toku." },
+            { id: 184, cat: "kap7_8", q: "Co způsobuje zpoždění toku pomocných pólů za proudem kotvy?", a: "Zpoždění magnetického toku pomocných pólů za proudem kotvy je způsobeno vířivými proudy v masivních (nelištěných) částech magnetického obvodu stroje, které podle Lenzova zákona brání rychlé změně toku (vzniká fázový posuv δ a nekompenzované zbytkové napětí uzb)." },
+            { id: 185, cat: "kap7_8", q: "Jaké negativní důsledky má zvlněný proud na činnost stejnosměrného motoru?", a: "Zvlněný proud:\n1. zhoršuje komutaci (jiskření na komutátoru),\n2. zvyšuje přídavné ztráty (Jouleovy ztráty i skinefekt) a tím oteplení stroje,\n3. zvyšuje maximální lamelové napětí,\n4. vyvolává vysokofrekvenční kapacitní ložiskové proudy,\n5. způsobuje kolísání momentu a vyšší hluk." },
+            // Kap 7.9
+            { id: 186, cat: "kap7_9", q: "Jaké druhy stejnosměrných strojů podle způsobu buzení rozeznáváte?", a: "1. Stroje s cizím buzením (budicí vinutí napájeno ze samostatného zdroje)\n2. Stroje s vlastním buzením:\n   • derivační (budicí vinutí paralelně ke kotvě)\n   • sériové (budicí vinutí v sérii s kotvou)\n   • smíšené – kompaudní (souhlasné) a protikompaudní (nesouhlasné)\n3. Stroje buzené permanentními magnety." },
+            { id: 187, cat: "kap7_9", q: "Kde se jednotlivé druhy stejnosměrných strojů používají?", a: "• Motory s cizím buzením se nejčastěji používají v přesných regulovaných pohonech (válcovny, těžní stroje, obráběcí stroje).\n• Sériové motory se uplatňují v elektrické trakci (lokomotivy, tramvaje), jeřábech a spouštěčích.\n• Motory s permanentními magnety u malých pohonů, v autech a servopohonech." },
+            { id: 188, cat: "kap7_9", q: "Jaké může mít stejnosměrný stroj buzení?", a: "Stejnosměrný stroj může mít buzení buď elektromagnetické (budicí vinutí na hlavních pólech – cizí, derivační, sériové, smíšené) anebo buzení permanentními magnety." },
+            // Kap 7.10
+            { id: 189, cat: "kap7_10", q: "Kde se používají sériové motory?", a: "Sériové motory se uplatňují zejména v trakčních pohonech (železniční a městská doprava) a zdvihacích zařízeních, kde se vyžaduje velký záběrný moment a přizpůsobení otáček zátěži." },
+            { id: 190, cat: "kap7_10", q: "Jakou mají sériové motory zatěžovací charakteristiku?", a: "Zatěžovací (otáčková) charakteristika sériového motoru je velmi „měkká“ (hyperbolická: n ~ 1/I a M ~ I² ~ 1/n²) – otáčky se výrazně mění se zatížením. Při odlehčení naprázdno rostou otáčky k nebezpečně vysokým hodnotám, proto sériový motor nesmí běžet naprázdno!" },
+            { id: 191, cat: "kap7_10", q: "Jaké jsou výhody a nevýhody použití motorů s cizím buzením?", a: "• Výhody: tvrdá otáčková charakteristika (malý pokles otáček se zatížením) a vynikající regulační vlastnosti v širokém rozsahu (regulace napětím kotvy do nn při M = konst., a odbuzováním nad nn při P = konst.).\n• Nevýhody: nutnost samostatného napájecího zdroje pro budicí vinutí a nebezpečí přepětí či přetočení při přerušení obvodu buzení." },
+            { id: 192, cat: "kap7_10", q: "Jak rozběhnete motor s cizím buzením napájeným z usměrňovače na jmenovité otáčky?", a: "Nejprve plně nabudíme motor na jmenovitý budicí proud Ibn (maximální tok Φ) a poté plynule od nuly zvyšujeme napětí kotvy U z řízeného usměrňovače až na jmenovitou hodnotu Un." },
+            { id: 193, cat: "kap7_10", q: "Co jsou motory kompaudní a protikompaudní?", a: "Jsou to stroje se smíšeným buzením, které mají na hlavních pólech dvě budicí vinutí – derivační (paralelní) a sériové.\n• U kompaudního motoru působí magnetická napětí obou vinutí ve stejném (souhlasném) smyslu.\n• U protikompaudního motoru působí sériové vinutí proti derivačnímu (v opačném smyslu)." },
+            // Kap 7.11
+            { id: 194, cat: "kap7_11", q: "Co je to bezkartáčový motor?", a: "Je to elektronicky komutovaný stejnosměrný motor (BLDC) s „převrácenou“ konstrukcí: na rotoru má permanentní magnety a na statoru vícefázové vinutí (3–6 sekcí), které je spínáno polovodičovými spínači (tranzistory/tyristory) na základě snímače polohy rotoru." },
+            { id: 195, cat: "kap7_11", q: "Jaké jsou výhody bezkartáčového motoru?", a: "Odpadá mechanický kluzný kontakt kartáč–komutátor, a tím odpadá jiskření, opotřebení kartáčů a nutnost údržby, zvyšuje se spolehlivost, účinnost a maximální dosažitelné otáčky, a teplo ze statorového vinutí se lépe odvádí." },
+            
+            // Kap 10 - Početní příklady (1 - 13)
+            { id: 196, cat: "kap10", q: "Příklad 1 & 5: Vypočítejte účinnost η a příkon 3f asynchronního motoru o štítkových hodnotách: P = 1,5 kW, I = 3,7 A, U = 400 V, cos φ = 0,82.", a: "Řešení:\n1) Elektrický příkon ze sítě:\nP₁ = √3 · U · I · cos φ = 1,732 · 400 · 3,7 · 0,82 = 2,1 kW\n\n2) Účinnost motoru:\nη = P / P₁ = 1,5 / 2,1 = 0,714 (tj. 71,4 %)" },
+            { id: 197, cat: "kap10", q: "Příklad 2: Třífázový asynchronní motor má výkon P = 5,5 kW, otáčky n = 1450 min⁻¹, napětí U₁ = 400 V, 50 Hz. Určete jeho jmenovitý moment M.", a: "Řešení:\nÚhlová rychlost: ω = (2π · n) / 60\nMoment na hřídeli:\nM = P / ω = (5,5 · 10³ · 60) / (2π · 1450) = 36,2 N·m" },
+            { id: 198, cat: "kap10", q: "Příklad 3: Mějme dvoufázové vinutí s parametry: p = 2 (tedy 2p = 4 póly), m = 2 fáze, q = 4 drážky na pól a fázi. Vypočítejte celkový počet drážek Q a krok cívky y v počtu drážek.", a: "Řešení:\n1) Celkový počet drážek:\nQ = 2p · m · q = 4 · 2 · 4 = 32 drážek\n\n2) Krok cívky (plný):\ny = Q / 2p = 32 / 4 = 8 drážek" },
+            { id: 199, cat: "kap10", q: "Příklad 4: Olejový transformátor má Sn = 100 kVA, U₂ = 0,4 kV, uk = 4,2 %. Nastane souměrný zkrat na sekundárním vinutí. Určete ustálený zkratový proud I₂k.", a: "Řešení:\n1) Jmenovitý sekundární proud:\nI₂n = Sn / (√3 · U₂) = 100 / (1,732 · 0,4) = 144,3 A\n\n2) Ustálený zkratový proud:\nI₂k = I₂n · (100 / uk) = 144,3 · (100 / 4,2) = 3 428 A" },
+            { id: 200, cat: "kap10", q: "Příklad 6: Asynchronní motor má štítkové hodnoty: P = 4 kW, n = 715 min⁻¹, In = 9,81 A, U = 3×400 V, f = 50 Hz, Mz/Mn = 1,75. Určete úhlovou rychlost ωn, skluz s a záběrný moment Mz.", a: "Řešení:\n1) Úhlová rychlost:\nωn = (2π · n) / 60 = (2π · 715) / 60 = 74,87 rad·s⁻¹\n\n2) Záběrný moment:\nMn = P / ωn = 4000 / 74,87 = 53,43 N·m\nMz = 1,75 · Mn = 1,75 · 53,43 = 93,5 N·m\n\n3) Synchronní otáčky (pro 2p = 8 je ns = 750 min⁻¹) a skluz:\ns = [(ns - n) / ns] · 100 = [(750 - 715) / 750] · 100 = 4,67 %" },
+            { id: 201, cat: "kap10", q: "Příklad 7: Asynchronní motor má štítkové hodnoty: P = 800 kW, n = 1476 min⁻¹, U = 6 kV (Y), I = 105 A, cos φ = 0,9. Určete skluz s, jmenovitý moment Mn a účinnost η.", a: "Řešení:\n1) Skluz (pro ns = 1500 min⁻¹):\ns = (1500 - 1476) / 1500 = 0,016 = 1,6 %\n\n2) Jmenovitý moment:\nMn = P / ω = (800 · 10³ · 60) / (2π · 1476) = 5 175 N·m\n\n3) Příkon a účinnost:\nP₁ = √3 · U · I · cos φ = 1,732 · 6000 · 105 · 0,9 = 981 kW\nη = (P / P₁) · 100 = (800 / 981) · 100 = 81,5 % (ve skriptech překlep 1,5 %)" },
+            { id: 202, cat: "kap10", q: "Příklad 8: Určete výkon ve vzduchové mezeře Pδ asynchronního motoru P = 15 kW, 400 V, 1440 min⁻¹, 50 Hz pro jmenovité zatížení. Mechanické ztráty zanedbejte.", a: "Řešení:\n1) Skluz motoru (ns = 1500 min⁻¹):\ns = (1500 - 1440) / 1500 = 0,04 (4 %)\n\n2) Výkon ve vzduchové mezeře (při zanedbání mech. ztrát P' = P):\nPδ = P / (1 - s) = 15 / (1 - 0,04) = 15,625 kW (cca 16 kW)" },
+            { id: 203, cat: "kap10", q: "Příklad 9: Synchronní generátor má parametry: S = 200 kVA, 2p = 20, Us = 6300 V, f = 50 Hz, cos φ = 0,7, průměr vrtání D = 1,5 m. Stanovte otáčky n, proud I₁ a pólovou rozteč tp.", a: "Řešení:\n1) Synchronní otáčky (p = 10):\nn = 60 · f / p = (60 · 50) / 10 = 300 min⁻¹\n\n2) Pólová rozteč:\ntp = (π · D) / 2p = (3,1416 · 1,5) / 20 = 0,236 m\n\n3) Statorový proud:\nI₁ = S / (√3 · Us) = 200 000 / (1,732 · 6300) = 18,33 A" },
+            { id: 204, cat: "kap10", q: "Příklad 10: Třífázový alternátor má parametry: S = 5000 kVA, n = 300 min⁻¹, cos φ = 0,8, Us = 6300 V (Y), D = 265 cm, Φ = 0,065 Wb, kv = 0,95. Určete proud I, počet pólů 2p a pólovou rozteč tp.", a: "Řešení:\n1) Jmenovitý proud:\nI = S / (√3 · Us) = 5 000 000 / (1,732 · 6300) = 458,2 A\n\n2) Počet pólů:\n2p = (2 · 60 · f) / n = (120 · 50) / 300 = 20 pólů (p = 10)\n\n3) Pólová rozteč:\ntp = (π · D) / 2p = (3,1416 · 2,65) / 20 = 0,416 m" },
+            { id: 205, cat: "kap10", q: "Příklad 11: Synchronní motor má výkon P = 100 kW při otáčkách 600 min⁻¹, napětí 3×380 V, 50 Hz, cos φ = 0,9 kap, účinnost η = 0,88. Poměrný záběrný proud je 2,8 a poměrný záběrný moment 0,5. Vypočtěte jmenovitý proud na svorkách In, proud jedné fáze při zapojení do trojúhelníku Inf, záběrný proud Iz a záběrný moment Mz.", a: "Řešení:\n1) Jmenovitý síťový proud:\nIn = P / (√3 · U · cos φ · η) = 100 000 / (1,732 · 380 · 0,9 · 0,88) = 192 A\n\n2) Fázový proud statoru (zapojení D):\nInf = In / √3 = 192 / 1,732 = 111 A\n\n3) Záběrný proud:\nIz = 2,8 · In = 2,8 · 192 = 538 A\n\n4) Záběrný moment:\nMz = 0,5 · Mn = 0,5 · [ (P · 60) / (2π · n) ] = 0,5 · [ (100 000 · 30) / (π · 600) ] = 796 N·m" },
+            { id: 206, cat: "kap10", q: "Příklad 12: Synchronní generátor má Sn = 125 MVA, Un = 13,2 kV, f = 50 Hz, ns = 166,7 min⁻¹, cos φ = 0,8, η = 97,7 %. Určete počet pólů 2p a jmenovitý proud statoru In1.", a: "Řešení:\n1) Počet pólových dvojic a pólů:\np = (60 · f) / ns = (60 · 50) / 166,7 = 18  =>  2p = 36 pólů\n\n2) Jmenovitý proud statoru:\nIn1 = Sn / (√3 · Un) = (125 · 10⁶) / (1,732 · 13 200) = 5 467 A" },
+            { id: 207, cat: "kap10", q: "Příklad 13 (1. část): Synchronní generátor má Sn = 20 MVA, Un = 6,3 kV, f = 50 Hz, ns = 3000 min⁻¹, cos φ = 0,8, η = 96,5 %. Určete činný výkon Pn, jalový výkon Q a jmenovitý proud I₁.", a: "Řešení:\n1) Činný výkon:\nPn = Sn · cos φ = 20 · 0,8 = 16 MW\n\n2) Jalový výkon (pro cos φ = 0,8 je sin φ = 0,6):\nQ = Sn · sin φ = 20 · 0,6 = 12 MVAr\n\n3) Jmenovitý proud statoru:\nI₁ = Sn / (√3 · Un) = 20 000 / (1,732 · 6,3) = 1 833 A" },
+            { id: 208, cat: "kap10", q: "Příklad 13 (2. část): Pro tentýž generátor (Pn = 16 MW, ns = 3000 min⁻¹, η = 96,5 %) určete mechanický příkon P₁ a poháněcí moment hnací turbíny M.", a: "Řešení:\n1) Mechanický příkon přiváděný na hřídel:\nP₁ = Pn / η = 16 / 0,965 = 16,58 MW\n\n2) Poháněcí moment turbíny:\nM = P₁ / ω = (16,58 · 10⁶ · 60) / (2π · 3000) = 52 776 N·m (5,28 · 10⁴ N·m)" },
+
+            // ============================================================================
+            // OTÁZKY ZE ZÁPOČTOVÝCH TESTŮ Z FOTEK – ODPOVĚDI PŘESNĚ DLE SKRIPT VŠB-TUO
+            // ============================================================================
+            { id: 209, cat: "test_foto", q: "[Test Var. A - 1] Napište definici elektrického stroje (jednou větou – el. stroj je...). (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 9):\n„Elektrický stroj je elektrické zařízení, jehož činnost je závislá na elektromagnetické indukci, může mít i části schopné vykonávat relativní pohyb a je určeno na přeměnu energie (případně pro regulaci napájení nebo absorbování jalové energie).“\n(Krátká definice ze str. 213, ot. 1: „Stroj je zařízení na přeměnu energie.“)" },
+            { id: 210, cat: "test_foto", q: "[Test Var. A - 2] Jaký je rozdíl mezi příkonem a výkonem a jak je definována účinnost stroje? (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 10–11):\n• Příkon (P₁): energie/výkon dodávaný do stroje za dobu dt.\n• Výkon (P₂ nebo P): energie/výkon, který stroj odevzdá (je menší o ztráty ve stroji ΔP).\n• Účinnost (η): poměr výkonu a příkonu (nebo energie odevzdané a přivedené):\nη = P / P₁  (resp. η = P₂ / P₁)." },
+            { id: 211, cat: "test_foto", q: "[Test Var. A - 3] Jak koreluje pojem „ztráty“ s definicí energií v zákoně zachování energie (energii nelze ztratit...)? (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 10 a kap. 4.3, str. 48):\nPodle zákona o zachování energie se přivedená energie P₁·dt neztrácí, ale rovná se součtu užitečné odevzdané energie P₂·dt a ztrát ve stroji ΔP·dt. Pojmem „ztráty“ označujeme parazitní přeměnu části přivedené energie na teplo (které ohřívá části stroje a musí se odvádět chlazením) a na parazitní síly a momenty budící vibrace, chvění a hluk." },
+            { id: 212, cat: "test_foto", q: "[Test Var. A - 4] Co je to převod transformátoru? (jak jej vypočteme) (1b)", a: "Dle skript Elektrické stroje (kap. 4.1, str. 39 a kap. 4.2, str. 45):\nStanovený převod napětí je poměr napětí jednoho (vstupního) vinutí ke stanovenému napětí druhého odpovídajícího (výstupního) vinutí při chodu naprázdno, což odpovídá poměru počtu závitů (a převrácenému poměru proudů):\np = U₁ / U₂ = N₁ / N₂ = I₂ / I₁." },
+            { id: 213, cat: "test_foto", q: "[Test Var. A - 5] Z jakého materiálu je elektrický obvod transformátoru a z jakého magnetický obvod? (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 10, kap. 2.1, str. 13–14 a kap. 4.3, str. 49):\n• Elektrický obvod (vstupní a výstupní vinutí): většinou tvořený měděným vinutím (Cu), méně často hliníkovým (Al).\n• Magnetický obvod: složený z feromagnetického materiálu – nejčastěji z tenkých vzájemně izolovaných ocelových plechů legovaných křemíkem (tl. 0,35 nebo 0,5 mm, orientovaných/neorientovaných), případně z amorfních kovů (kovového skla)." },
+            { id: 214, cat: "test_foto", q: "[Test Var. A/C - 6] Napište vztah pro elektrický příkon elektromotoru a vztah pro jeho mechanický výkon na hřídeli. (2b)", a: "Dle skript Elektrické stroje (str. 11, str. 100 a str. 203):\n• Elektrický příkon:\n  - střídavý motor: P₁ = m₁ · U₁ · I₁ · cos φ  (pro 3f motor: P₁ = √3 · U · I · cos φ)\n  - stejnosměrný motor: P₁ = U · I\n\n• Mechanický výkon na hřídeli (rovnice 1.2 na str. 11):\n  P = M · ω = M · (2π · n / 60)" },
+            { id: 215, cat: "test_foto", q: "[Test Var. A - 7] Jak můžeme regulovat otáčky asynchronního elektromotoru? Uveďte základní vztah pro otáčky, vyznačte v něm regulovatelné veličiny a pro každou z nich uveďte alespoň jeden technický prostředek, pomocí kterého můžeme regulaci fyzicky realizovat. (2b)", a: "Dle skript Elektrické stroje (kap. 5.5, str. 82–90, rovnice 5.62 a ot. 73–79 na str. 217):\nZákladní vztah pro otáčky:\nn = ns · (1 - s) = (60 · f₁ / p) · (1 - s)\n\nRegulovatelné veličiny a prostředky ze skript:\n1. Změnou skluzu (s): zařazováním regulačního odporu R₂s do rotorového obvodu (u kroužkových motorů), přivedením protinapětí do rotoru (podsynchronní ventilová kaskáda) nebo změnou statorového napětí U₁ (řízeným polovodičovým měničem – softstartérem).\n2. Změnou počtu pólů (2p, resp. p): přepínáním vinutí statoru na různý počet pólů (např. Dahlanderovo zapojení v poměru 1:2 – Y/YY nebo D/YY, případně dvě samostatná vinutí).\n3. Změnou statorového kmitočtu (f₁): plynulá regulace pomocí polovodičového měniče kmitočtu (při zachování U₁ / f₁ = konst.)." },
+            { id: 216, cat: "test_foto", q: "[Test Var. A - 8 & C - 7] Jak velký (ve vztahu ke jmenovitému) je záběrný proud asynchronního elektromotoru při spouštění přímým připojením na síť? (1b)", a: "Dle skript Elektrické stroje (kap. 5.2, str. 63, kap. 5.4, str. 74 a ot. 68 na str. 217):\nProud nakrátko (záběrný proud) při spouštění bývá 5 až 7násobkem jmenovitého proudu motoru: Iz = (5 až 7) · In (dle str. 74 nesmí být větší než 7,5násobek jmenovitého proudu)." },
+            { id: 217, cat: "test_foto", q: "[Test Var. A/B - 9] Jaké nejvyšší otáčky může mít nezatížený asynchronní elektromotor na síti 50 Hz (EU) a 60 Hz (USA)? (1b)", a: "Dle skript Elektrické stroje (kap. 3.1, str. 31 a kap. 5.2, str. 58–59):\nPodle vztahu ns = (60 · f) / p jsou nejvyšší synchronní otáčky pro dvoupólový stroj (2p = 2, tedy p = 1):\n• Pro f = 50 Hz (EU): ns = (60 · 50) / 1 = 3 000 ot/min (min⁻¹).\n• Pro f = 60 Hz (USA): ns = (60 · 60) / 1 = 3 600 ot/min (min⁻¹).\n(U skutečného nezatíženého as. motoru naprázdno jsou otáčky nepatrně nižší než synchronní kvůli krytí mechanických ztrát, str. 62)." },
+            { id: 218, cat: "test_foto", q: "[Test Var. A - 10] Proč se synchronnímu stroji říká synchronní? (1b)", a: "Dle skript Elektrické stroje (kap. 6.1, str. 105 a ot. 95 na str. 218):\nProtože protékající třífázový proud vytvoří ve statoru kruhové točivé magnetické pole, jehož otáčky jsou shodné s otáčkami rotoru (pole magnetů) ns = 60·f / p – otáčí se tedy synchronně a při změně zatížení se synchronní rychlost otáčení nezmění." },
+            { id: 219, cat: "test_foto", q: "[Test Var. B - 7] Proč se asynchronnímu stroji říká asynchronní? (1b)", a: "Dle skript Elektrické stroje (kap. 5.2, str. 58 a ot. 53 na str. 216):\nAby se v rotorovém vinutí indukovala elektromotorická síla a protékal jím proud, musí existovat relativní pohyb rotoru vzhledem k točivému poli statoru. Proto jsou otáčky zatíženého motoru n vždy o něco nižší (o skluz s) než synchronní otáčky točivého pole ns, tedy asynchronní." },
+            { id: 220, cat: "test_foto", q: "[Test Var. B - 8] Jaké otáčky bude mít a) nezatížený, b) zatížený 90 % výkonu, synchronní elektromotor na síti 50 Hz (EU) a 60 Hz (USA)? (1b)", a: "Dle skript Elektrické stroje (kap. 6.12, str. 158 a ot. 141–142 na str. 222–223):\nSynchronní motor udržuje konstantní otáčivou rychlost ns = (60 · f) / p nezávislou na zatížení! Proto pro a) nezatížený i b) zatížený na 90 % výkonu budou otáčky STEJNÉ:\n• Pro 50 Hz (EU): nejvýše 3 000 min⁻¹ (pro p=1; dále 1500 pro p=2, 1000 pro p=3...).\n• Pro 60 Hz (USA): nejvýše 3 600 min⁻¹ (pro p=1; dále 1800 pro p=2, 1200 pro p=3...)." },
+            { id: 221, cat: "test_foto", q: "[Test Var. A - 11] Popište ve třech až čtyřech krocích postup přesného fázování synchronního alternátoru v tepelné elektrárně. (2b)", a: "Dle skript Elektrické stroje (kap. 6.8, str. 135–137 a ot. 121–122 na str. 221):\n1. Roztočit alternátor poháněcím zařízením (turbínou) na synchronní otáčky tak, aby kmitočet stroje a sítě byl stejný (ωg = ωs, kontrola frekventoměrem).\n2. Nabudit alternátor (regulovat buzení) tak, aby velikost napětí stroje a sítě byla stejná (Ug = Us, kontrola voltmetry).\n3. Zkontrolovat stejný sled fází a sledovat fázový posun mezi napětím sítě a generátoru (synchronoskopem nebo žárovkami).\n4. V okamžiku nulového/minimálního fázového posunu (us = ug) sepnout vypínač a připojit generátor k síti." },
+            { id: 222, cat: "test_foto", q: "[Test Var. B - 9] Popište ve třech až čtyřech krocích postup autosynchronního rozběhu a fázování synchronního alternátoru ve vodní elektrárně. (2b)", a: "Dle principu asynchronního rozběhu a synchronizace ve skriptech Elektrické stroje (kap. 6.12, str. 159–160 a ot. 144 na str. 223):\n1. Nenabuzený stroj (s budicím vinutím zkratovaným přes ochranný odpor 5 až 10·Rb) se roztočí turbínou na otáčky blízké synchronním (cca 95–98 % ns).\n2. Nenabuzený alternátor se sepnutím vypínače připojí k síti.\n3. Ihned poté se zapne stejnosměrné buzení rotoru.\n4. Stroj se synchronizačním momentem rychle vtáhne do synchronismu se sítí." },
+            { id: 223, cat: "test_foto", q: "[Test Var. B - 10] Jaká je jednotka výkonu asynchronního elektromotoru? (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 11–12 a kap. 5.1, str. 55):\nJednotkou jmenovitého mechanického výkonu P na hřídeli je Watt [W], resp. jeho násobky kilowatt [kW] nebo megawatt [MW]." },
+            { id: 224, cat: "test_foto", q: "[Test Var. B - 11] Co je to BLDC nebo EC motor? Jakému typu stroje odpovídají jeho charakteristiky? (1b)", a: "Dle skript Elektrické stroje (kap. 7.11, str. 210–211 a ot. 194–195 na str. 226):\n• Jde o stejnosměrný bezkartáčový motor (elektronicky komutovaný motor), který má tzv. převrácenou konstrukci: permanentní magnety jsou umístěny na rotoru a kotevní vinutí (spojené do 3 až 6 sekcí) je na statoru a je spínáno polovodičovými spínači (tyristory, tranzistory) podle snímače vzájemné polohy rotoru a statoru.\n• Jeho charakteristiky odpovídají stejnosměrnému motoru s cizím buzením (resp. buzenému permanentními magnety)." },
+            { id: 225, cat: "test_foto", q: "[Test Var. A - 12] Jakou funkci plní komutátor u dynama a jakou u ss motoru? (1b)", a: "Dle skript Elektrické stroje (kap. 7.2, str. 178–179 a ot. 158–159 na str. 224):\n• U dynama má komutátor funkci mechanického usměrňovače (ve vinutí kotvy se indukuje střídavý proud a komutátor jej usměrňuje na stejnosměrný na kartáčích).\n• U motoru plní funkci mechanického měniče kmitočtu / střídače (mění přiváděný stejnosměrný proud na střídavý ve vodičích kotvy při přechodu od jednoho pólu k druhému)." },
+            { id: 226, cat: "test_foto", q: "[Test Var. A - 13 & B - 12] Co je to lineární motor? (slovně + jednoduchý náčrt) (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 10 a kap. 2.3, str. 22):\nLineární motor je pohybový elektrický stroj s pohybem lineárním (přímočarým), který přeměňuje elektrickou energii přímo na posuvný mechanický pohyb bez rotačních převodů.\nNáčrt: Vznikne rozvinutím statoru i rotoru rotačního stroje do roviny (viz obr. 2.6 na str. 22) – skládá se z rovinné primární části s vinutím a rovinné sekundární části (vodivé nebo magnetické dráhy)." },
+            { id: 227, cat: "test_foto", q: "[Test Var. C - 1 & 2] 1. Napište definici transformátoru (jednou větou). 2. Na základě kterého fyzikálního zákona transformátor pracuje? (2b)", a: "Dle skript Elektrické stroje (kap. 4.1, str. 37 a ot. 30 na str. 214):\n1. Definice: Transformátor je střídavý netočivý (statický) elektrický stroj, který se používá k přeměně elektrické energie určitého napětí a proudu na elektrickou energii jiného (případně stejného) napětí a proudu při stejném kmitočtu bez přispění mechanické energie.\n2. Fyzikální zákon: Pracuje na principu elektromagnetické indukce – indukčního zákona: e = -Nc · (dΦ / dt) (str. 32 a 37)." },
+            { id: 228, cat: "test_foto", q: "[Test Var. C - 3] Jaké jsou hlavní štítkové hodnoty transformátoru? (1b)", a: "Dle skript Elektrické stroje (kap. 4.1, str. 38 – „Štítkové údaje transformátoru“):\n• Druh transformátoru (např. distribuční)\n• Stanovený výkon v kVA, MVA\n• Stanovené napětí (primární a sekundární) v V, kV\n• Stanovený proud v A\n• Stanovený kmitočet v Hz a počet fází\n• Znak zapojení vinutí a hodinový úhel (např. Yy6, Dyn11)\n• Napětí nakrátko uk [%] a proud naprázdno i0 [%]\n• Druh zatížení (např. S1), druh chlazení, krytí IP, třída izolace a hmotnost." },
+            { id: 229, cat: "test_foto", q: "[Test Var. C - 4] Transformátor má dvě cívky, jedna má N₁ = 1000 závitů, druhá N₂ = 2000. Přivedeme-li na první cívku napětí 110 V AC, jaké bude napětí:\na) Na druhé cívce naprázdno\nb) Na druhé cívce při zatížení\nc) Přehodíme-li cívky 2/1\nd) Při 230 V DC (1b)", a: "Dle skript Elektrické stroje (kap. 3.2, str. 32 a kap. 4.1, str. 37–40):\n• a) Na druhé cívce naprázdno: U₂₀ = U₁ · (N₂ / N₁) = 110 · (2000 / 1000) = 220 V.\n• b) Na druhé cívce při zatížení: menší než 220 V (o úbytek napětí na impedanci nakrátko Zk·I, str. 40).\n• c) Přehodíme-li cívky 2/1: U₂ = 110 · (1000 / 2000) = 55 V.\n• d) Při 230 V DC (stejnosměrných): 0 V (transformátor je střídavý stroj pracující na principu časové změny toku dΦ/dt; při DC je dΦ/dt = 0, takže se napětí neindukuje)." },
+            { id: 230, cat: "test_foto", q: "[Test Var. C - 5] Z jakého materiálu je elektrický obvod elektromotoru a z jakého magnetický obvod? (1b)", a: "Dle skript Elektrické stroje (kap. 1, str. 10, kap. 2.1, str. 13–14 a ot. 6 a 52):\n• Elektrický obvod (vinutí): měď (Cu), slitiny mědi (bronz, mosaz) a hliník (Al – zejména klecová vinutí asynchronních motorů) + uhlík na kartáče.\n• Magnetický obvod: vzájemně izolované ocelové plechy legované křemíkem („dynamové plechy“ tl. 0,5 mm nebo 0,35 mm), u stejnosměrných koster i litá ocel nebo litina." },
+            { id: 231, cat: "test_foto", q: "[Test Var. B2 - 8] Jak můžeme regulovat otáčky synchronního elektromotoru? Uveďte základní vztah pro otáčky, vyznačte v něm regulovatelné veličiny a technický prostředek. (2b)", a: "Dle skript Elektrické stroje (kap. 6.12, str. 158–160):\nZákladní vztah pro otáčky synchronního motoru (rovnice 6.98 na str. 158):\nns = (60 · f) / p\n\nRegulovatelné veličiny:\n1. Kmitočet napájecího napětí (f) – plynulá regulace pomocí statického frekvenčního měniče (tzv. ventilový pohon / ventilový motor, str. 160).\n2. Počet pólových dvojic (p) – teoreticky přepínáním počtu pólů statorového vinutí." },
+            { id: 232, cat: "test_foto", q: "[Test Var. B2 - 11] Kde se používají stejnosměrné motory? (1b)", a: "Dle skript Elektrické stroje (kap. 7.1, str. 176 a ot. 187, 189 na str. 225):\n• V elektrické dopravě (trakční pohony – železniční i městská doprava: lokomotivy, tramvaje).\n• V regulovaných průmyslových pohonech (pohony válcoven, dolů, v papírnách, u obráběcích strojů).\n• Malé SS stroje se používají v regulační technice, v automobilech, domácích spotřebičích a hračkách." },
+            { id: 233, cat: "test_foto", q: "[Test Var. B2 - 14] Když se proud v obvodu zvýší 10násobně, kolikrát se zvýší ztráty? (1b)", a: "Dle skript Elektrické stroje (str. 35, 48, 100): Ztráty ve vinutí (Jouleovy ztráty) jsou úměrné druhé mocnině proudu: ΔPCu = R · I².\nZvýší-li se proud 10násobně, zvýší se ztráty 10² = 100krát (100×)." },
+            { id: 234, cat: "test_foto", q: "[Test Var. A/B - 13/14] Co je to elektrický přístroj a jaké funkce plní v elektrickém obvodu? (1b)", a: "Přesně dle skript Elektrické přístroje spínací, ochranné a jisticí (kap. 1, str. 6):\nElektrické přístroje tvoří důležitou část elektrické rozvodné sítě – slouží ke spínání provozních a zkratových proudů, jištění a ochraně proti poruchovým stavům (nadproudy, zkraty, přepětí atp.) a zajišťují měření a řízení.\nMusí plnit těchto 5 základních funkcí (str. 6):\n1. spojují a rozpojují elektrický obvod bez proudu,\n2. zapínají a vypínají elektrický obvod s proudem,\n3. chrání elektrický obvod před poruchovými stavy,\n4. řídí elektrický obvod tak, aby bylo dosaženo požadovaného stavu,\n5. chrání obsluhu před úrazem elektrickým proudem." },
+            { id: 235, cat: "test_foto", q: "[Test Var. B - 14 & B2 - 15] Jak se označuje přístroj:\na) pro ochranu osob před nebezpečným dotykovým napětím?\nb) pro ochranu zařízení před účinky poruchových proudů (nadproudů a zkratů)? (1b)", a: "Dle skript Elektrické přístroje (kap. 1, str. 6, kap. 3.1, str. 25, kap. 6, str. 63 a kap. 12, str. 179):\n• a) Ochrana osob před nebezpečným dotykovým napětím (úrazem el. proudem): proudový chránič (případně při práci na vypnutém zařízení odpojovač a uzemňovač, str. 25).\n• b) Ochrana zařízení před účinky poruchových proudů (nadproudů a zkratů): jistič (samočinný vypínač, str. 63) a elektrická tavná pojistka (str. 179)." },
+            { id: 236, cat: "test_foto", q: "[Test Var. A/B - 15] Napište alespoň dvě definice pojistky (je jich min. 7–8). (2b)", a: "Přesně dle skript Elektrické přístroje (kap. 12, str. 179–182):\n1. Elektrická tavná pojistka je jisticí přístroj založený na principu tepelně nejslabšího článku proudovodné dráhy – obsahuje úmyslně vytvořený zeslabený průřez vodiče (tavný vodič), který se při průchodu nadproudu či zkratu účinkem Jouleova tepla přetaví a přeruší obvod dříve, než se poškodí další části obvodu.\n2. Je to jednorázový jisticí prvek, u něhož zapůsobením dojde k nevratnému poškození (přetavení) tavného vodiče a pojistková vložka musí být vyměněna.\n3. Je to rychlý omezující jisticí přístroj, který při zkratu přeruší obvod dříve, než zkratový proud dosáhne svého prvního maxima (omezuje zkratový proud na nižší tavný proud I_TAV, str. 180 a 182)." },
+            { id: 237, cat: "test_foto", q: "[Test Var. A - 16] Popište, jak funguje tavná pojistka při zkratu (slovně v krocích a–d)? (2b)", a: "Přesně dle skript Elektrické přístroje (kap. 12.4 „Popis fyzikálních dějů při působení pojistky“, str. 189–190 a obr. 12.8):\na. V obvodu dojde k náhlému zkratu, proud stoupne s velkou strmostí nárůstu (v časech pod 10⁻² s), takže prakticky nedochází k odvodu tepla do okolí.\nb. Teplota roste po celé délce tavného vodiče (nebo v jeho zúžených místech) současně, dosáhne tavné teploty a vodič během velmi krátké doby přejde ze stavu pevného přes kapalný do stavu plynného (vypaří se).\nc. Vypařený a ionizovaný kov je vržen na stěny kanálu tvořeného udusaným křemičitým pískem a mezi čely pojistkové patrony se zapálí elektrický oblouk.\nd. Písek se zahřívá a taví, čímž je oblouk v úzkém kanálu spečeného písku intenzivně chlazen; vzniká vysoký obloukový gradient, úbytek napětí na oblouku vzroste nad napětí zdroje a oblouk uhasíná (ještě před dosažením maxima zkratového proudu)." },
+            { id: 238, cat: "test_foto", q: "[Test Var. B - 16] Popište, jak funguje pojistka při přetížení (slovně v krocích a–d)? (2b)", a: "Přesně dle skript Elektrické přístroje (kap. 12.3.3 a 12.4, str. 188–189, obr. 12.7):\na. V obvodu dojde k nárůstu proudu nad jmenovitou hodnotu In (překročí krajní proud I_KR = 1,3 až 1,6 In).\nb. Teplota tavného vodiče pomalu vzrůstá; podélným odváděním tepla do chladicích čel (nožů/praporců) je nejvyšší teplota uprostřed tavného vodiče. Pokud je zde nanesena kulička nízkotavné slitiny (cínové pájky), roztaví se a začne rozpouštět stříbro/měď, čímž vznikne slitina s nižší teplotou tavení (kolem 400 °C).\nc. Ve středu tavného vodiče (v místě s nejmenším odvodem tepla) se dosáhne tavné teploty, vodič se přetaví a v mezeře se zapálí elektrický oblouk.\nd. Protože má oblouk větší elektrický odpor než tavný vodič, vyvíjí více tepla a dochází k postupnému odtavování zbylých částí tavného vodiče až do okamžiku, kdy oblouk dosáhne délky postačující k jeho uhasnutí." },
+            { id: 239, cat: "test_foto", q: "[Test Var. A - 17] Čím se liší pojistka pro jištění polovodičů (např. měniče frekvence) od pojistky pro jištění elektromotoru? (1b)", a: "Dle skript Elektrické přístroje (kap. 12.2 a 12.3.3, str. 181, 187–188, obr. 12.5):\n• Pojistka pro jištění polovodičů (ultrarychlá): má velmi krátkou tavnou dobu a silně omezuje zkratový proud, aby chránila tepelně citlivé polovodičové prvky měniče.\n• Pojistka pro jištění elektromotoru (zpožděná / motorová): má upravenou tavnou charakteristiku (např. dvouelementová pojistka nebo s nízkotavnou pájkou, str. 188 a 191), aby bez přetavení snesla krátkodobý záběrný nadproud motoru při spouštění (5–7× In) a vypínala až při delším přetížení nebo zkratu." },
+            { id: 240, cat: "test_foto", q: "[Test Var. B - 17] Jak je ve vztahu k časové konstantě obvodu „tau“ (τ) definován ustálený stav? (1b)", a: "Dle skript Elektrické přístroje (kap. 5.1, str. 57, obr. 5.2 a kap. 12.3.2, str. 184):\nProud v obvodu s odporem R a indukčností L narůstá podle exponenciály i = (U/R)·(1 - e^(-t/τ)), kde τ = L / R je časová konstanta obvodu.\nTeoreticky nastává ustálený stav I_∞ = U/R za nekonečně dlouhou dobu (t → ∞), prakticky po uplynutí doby t ≈ (3 až 5) · τ, kdy přechodná složka zanikne (klesne pod 5 %, resp. pod 1 %)." },
+            { id: 241, cat: "test_foto", q: "[Test Var. A/B - 18] Za jak dlouho vypne pojistka proud, který je velikostí rovný proudu jmenovitému (I = In)? (1b)", a: "Přesně dle skript Elektrické přístroje (kap. 12.2, str. 181 a kap. 12.3.1, str. 182):\nNIKDY (za nekonečně dlouhou dobu, t → ∞)!\nDefinice ze str. 182: „Jmenovitý proud In je proud, který musí pojistka trvale snést, aniž by teplota překročila přípustné meze a pojistka by zapůsobila.“ (Pojistka se přetaví až při překročení tzv. krajního proudu I_KR = 1,3 až 1,6 · In)." },
+            { id: 242, cat: "test_foto", q: "[Test Var. A/B - 19] Jaká je podstata vypínání oblouku v obvodu střídavého proudu (proč a v jakém okamžiku periody U a I oblouk zhasne) a jak se zháší stejnosměrný oblouk ve vypínači? (2b)", a: "Přesně dle skript Elektrické přístroje (kap. 3.2, str. 31 a kap. 4.2, str. 44–55):\n• V obvodu střídavého proudu (AC): Oblouk zhasíná v okamžiku, kdy střídavý proud prochází přirozenou NULOU (I = 0, dvakrát za periodu). V nule proudu oblouk uhasne, dochází k deionizaci mezikontaktního prostoru a zotavení elektrické pevnosti. Pokud elektrická pevnost mezery roste rychleji než zotavené napětí (nebo zotavené napětí nepřekročí katodový spád doutnavého výboje 300–350 V, resp. u kovové komory součet úbytků na lamelách), oblouk již znovu nezapálí.\n\n• V obvodu stejnosměrného proudu (DC): Proud nulou neprochází! Stejnosměrný oblouk se proto zháší zvýšením jeho odporu tak, aby napětí na oblouku u_o převýšilo napětí zdroje U:\n  1. natažením (prodloužením) oblouku,\n  2. elektromagnetickým vyfukováním oblouku (vyfukovací cívkou) do izolační roštové nebo zužující se štěrbinové zhášecí komory (kde se oblouk stykem se stěnami intenzivně ochlazuje),\n  3. rozdělením oblouku na několik dílčích oblouků v sérii (využití součtu anodových a katodových úbytků napětí)." },
+            { id: 243, cat: "test_foto", q: "[Test Var. A - 20 & 21] 20. Jak se označuje napětí na kontaktech vypínače při procesu vypínání? (1b)\n21. Jakou minimální životnost ve spínacích cyklech musí dosahovat stykač? (1b)", a: "Přesně dle skript Elektrické přístroje:\n• 20. Napětí na kontaktech při vypínání (str. 31, 55, 58, 113): Během hoření oblouku je to obloukové napětí (u_o), a v okamžiku uhasnutí oblouku při nule proudu narůstá na kontaktech přechodným dějem ZOTAVENÉ NAPĚTÍ.\n\n• 21. Životnost stykače (kap. 4.1 „Stykače“, str. 41): Elektrická trvanlivost stykače dosahuje několika statisíců spínacích cyklů (10⁵ až 10⁶; mechanická životnost v řádu milionů cyklů, přičemž počet spínacích cyklů za hodinu může dosáhnout až několika set)." },
+            { id: 244, cat: "test_foto", q: "[Test Var. C - 20 & 21] 20. Které nejdůležitější typy spouští obsahuje jistič nn? (1b)\n21. Jaký materiál je použit v jističi na proudovodnou dráhu a jaký na kontakt, a proč? (1b)", a: "Přesně dle skript Elektrické přístroje (kap. 2.1, str. 11–15 a kap. 6.2, str. 68–80):\n• 20. Nejdůležitější typy spouští v jističi NN (str. 68–77):\n  1) Elektromagnetická mžiková (zkratová) spoušť – proudově nezávislá, vypíná okamžitě při zkratu.\n  2) Tepelná nadproudová (bimetalová / dvojkovová) spoušť – proudově závislá, vypíná se zpožděním při nadproudech (od cca 1,2·In).\n  3) Podpěťová spoušť (vypne při poklesu napětí o 40 % a více), případně moderní elektronická / mikroprocesorová spoušť (str. 68 a 80).\n\n• 21. Materiály v jističi a proč (kap. 2.1, str. 13–15):\n  - Proudovodná dráha: Měď (Cu) – pro svou výbornou elektrickou a tepelnou vodivost a dobré mechanické vlastnosti.\n  - Kontakty: Stříbro (Ag – poloušlechtilý kov s nejlepší el. i tepelnou vodivostí, jeho tenká oxidová vrstva Ag₂O se tlakem a teplotou snadno rozpadá) a spékané (slinuté) materiály stříbra či mědi s wolframem (WAg, WCu) na opalovací kontakty – wolfram má vysokou tvrdost a teplotu tání a chrání kontakty před opalem obloukem a svařením." },
+
+            // ============================================================================
+            // SHRNUTÍ KAPITOL ZE 2. SKRIPT: ELEKTRICKÉ PŘÍSTROJE SPÍNACÍ, OCHRANNÉ A JISTICÍ
+            // ============================================================================
+            { id: 245, cat: "ep_skripta", q: "[EP Kap. 1] Jaké jsou 4 funkční stavy spínacího přístroje (2 statické a 2 dynamické) a z jakých 5 hlavních konstrukčních částí se skládá?", a: "Dle kap. 1 (str. 6–7):\nČtyři funkční stavy spínače:\n• Statické (trvalé):\n  1. Vypnuto: I = 0, napětí na kontaktech Uk = Us.\n  2. Zapnuto: I = In, napětí na kontaktech Uk = 0.\n• Dynamické (přechodné):\n  3. Zapínání: proud přechodným dějem narůstá z 0 na ustálenou hodnotu.\n  4. Vypínání: proud klesá k 0, na kontaktech narůstá přechodným dějem napětí z 0 na Us.\n\nPět hlavních konstrukčních částí:\n1. Proudovodné části, 2. Izolační části, 3. Mechanismus (tyto 3 má každý přístroj), 4. Zhášedla, 5. Výzbroj (ověšení)." },
+            { id: 246, cat: "ep_skripta", q: "[EP Kap. 1] Co patří mezi „výzbroj (ověšení)“ spínacího přístroje a jak se dělí spínací přístroje podle funkční složitosti?", a: "Dle kap. 1.5 (str. 8–9):\n• Ověšení (zařízení rozšiřující činnost, bez nichž ale přístroj zvládne základní funkci): pomocné signální kontakty, dálkové elektromagnetické spouště, přímé nadproudové (tepelné, elmag.) a podpěťové spouště, dálkové pohony (ruční, strojní), podvozek a kryty.\n\n• Dělení podle funkční složitosti:\n1. Přístroje bez zhášedel:\n   - přístroje bez oblouku (odpojovače, uzemňovače, přepojovače)\n   - přístroje prosté (pákové, suvné, otočné spínače)\n2. Výkonové vypínače (se zhášedly): magnetické, kapalinové, s tuhým hasivem (plynotvorné), tlakovzdušné, plynové (SF₆), vakuové a bezkontaktní." },
+            { id: 247, cat: "ep_skripta", q: "[EP Kap. 2.1] Jak dělíme kontaktní materiály podle odolnosti proti cizím povrchovým vrstvám a co je to tunelový jev a epilamen?", a: "Dle kap. 2.1 (str. 11–15):\nRozdělení kontaktních materiálů do 3 skupin:\n1. Ušlechtilé kovy (Au, Pt, Rh, Ir, Pd) – tvoří jen monomolekulární kysličníkovou vrstvu, používají se u jemných relé s malými přítlačnými silami.\n2. Poloušlechtilé kovy (Ag, Ni) – stříbro má nejlepší el. i tepelnou vodivost, citlivé jen na síru (Ag₂S).\n3. Neušlechtilé kovy (Cu, bronz, mosaz, Al, W) – měď je nejpoužívanější, ale tvoří narůstající vrstvy CuO/Cu₂O.\n\n• Tunelový jev: proniknutí volného elektronu velmi tenkou nevodivou vrstvou (řádu délky vlny elektronu).\n• Epilamen: souvislá monomolekulární vrstva tuku pevně lnoucí ke kovu (chrání trvalé kontakty před korozí)." },
+            { id: 248, cat: "ep_skripta", q: "[EP Kap. 2.2 & 2.3] Jaké jsou 3 základní skupiny provedení kontaktů a jakých 5 konstrukčních zásad se u kontaktů dodržuje?", a: "Dle kap. 2.2 a 2.3 (str. 16–24):\nTři skupiny provedení kontaktů (dle směru pohybové síly Fp a kontaktní síly Fk):\n1. Kontakty čelní tupé (Fp a Fk jsou souosé; drcení vrstev tlakem).\n2. Kontakty čelní smykové (po dotyku dojde ke krátkému smýknutí a oddělení místa klidového styku od opalovacích růžků).\n3. Kontakty třecí (Fk je kolmá na Fp; např. pero–nůž, palcový, růžicový a „S“ kontakt; nemají odskok).\n\nPět konstrukčních zásad kontaktů (str. 22):\na) oddělení elektrické a mechanické funkce (aby proud nevyhříval přítlačnou pružinu),\nb) měkká charakteristika kontaktní pružiny,\nc) paralelní řazení kontaktů (snižuje stykový odpor R = k / Fⁿ),\nd) určitost místa styku (ve středu plochy pro nejlepší odvod tepla),\ne) oddělení paty oblouku od místa klidového styku (hlavní vs. opalovací kontakt)." },
+            { id: 249, cat: "ep_skripta", q: "[EP Kap. 3.1] Jakou funkci plní odpojovač, jak je blokován s uzemňovačem a jaké malé proudy smí vypínat?", a: "Dle kap. 3.1 (str. 25–29):\n• Odpojovač spojuje a rozpojuje nezatížený elektrický obvod (po vypnutí vypínačem) s viditelnou drahou rozpojení. Slouží především k ochraně osob pracujících na odpojeném zařízení a má zvýšenou izolační hladinu (při přepětí musí nastat přeskok k zemi, nikoli mezi kontakty).\n• Blokování s uzemňovačem: mechanické, el. či pneumatické blokování zabraňuje zapnutí uzemňovacích nožů, pokud jsou zapnuty hlavní kontakty odpojovače.\n• Ve funkci prostého přístroje smí odpojovač (se svislými noži a rychlým pohybem) spínat jen malé proudy:\n  - magnetizační proudy transformátorů do 200 kVA,\n  - nabíjecí proudy venkovních vedení,\n  - malé provozní proudy do vypínacího výkonu 50 kVA." },
+            { id: 250, cat: "ep_skripta", q: "[EP Kap. 3.2] Co jsou přístroje prosté, jak se dělí a proč mají mžikové vypínání?", a: "Dle kap. 3.2 (str. 30–40):\n• Přístroje prosté spínají obvody pod proudem (vzniká oblouk), ale nemají žádná aktivní zhášedla – využívají pouze pasivní opatření (smýkavý pohyb, opalovací růžky, prodloužení zdvihu a nezávislý mžikový mechanismus s pružinou, aby rychlost rozpojení nezávisela na rychlosti ruky obsluhy).\n• Dělení podle pohybu kontaktu:\n  1. Pákové (nožové vypínače s pomocným opalovacím nožem, kloubové vypínače, venkovní úsekové vypínače – úsečníky),\n  2. Suvné (tlačítkové ovladače, stiskací vypínače „tahem zapni – stiskem vypni“ s třmenovými pružinami, koncové spínače),\n  3. Otočné (válcové a paketové přepínače)." },
+            { id: 251, cat: "ep_skripta", q: "[EP Kap. 4.1] Co je to stykač, jaké nadproudy spíná a jaké má konstrukční provedení?", a: "Dle kap. 4.1 (str. 41–43):\n• Stykač je dálkově (nejčastěji elektromagneticky) ovládaný spínací přístroj určený pro časté spínání provozních proudů motorů a spotřebičů (stovky sepnutí za hodinu, životnost statisíce až miliony cyklů). Má jen jednu stabilní polohu (vypnuto).\n• Spíná provozní nadproudy: v AC obvodech zapíná 6–12× In a vypíná 6–10× In (v DC obvodech 2–5× In). Není však určen k vypínání zkratů (ty musí vypnout předřazená pojistka nebo jistič).\n• Dělení: podle zhášecího média (vzduchové, olejové, vakuové) a podle konstrukce (pákové – pro AC i DC s vyfukovací cívkou; suvné – dvojité můstkové přerušení bez ohebných přívodů, jen pro AC)." },
+            { id: 252, cat: "ep_skripta", q: "[EP Kap. 4.2] Vysvětlete princip elektromagnetického vyfukování oblouku a rozdíl mezi izolační a kovovou zhášecí komorou.", a: "Dle kap. 4.2 (str. 44–55):\n• Princip: Interakcí magnetického pole oblouku s magnetickým polem sériové zhášecí cívky (nebo proudovodné smyčky) vzniká elektrodynamická síla, která žene oblouk po opalovacích růžcích tvaru V velkou rychlostí napříč stojícím chladným vzduchem do zhášecí komory.\n• Izolační zhášecí komory (pro DC i AC): buď s izolačním roštem (natažení oblouku do vln) nebo štěrbinové (zužující se keramická štěrbina deformuje a chladí oblouk a zvyšuje jeho odpor).\n• Kovové zhášecí komory (pouze pro AC): rošt z ocelových či měděných lamel (Slepianův deionový vypínač s hustým roštem nebo jednoduchý rošt u jističů NN). Ocelové lamely s klínovým výřezem samy vtahují oblouk silou F₁ do roštu, kde se rozdělí na dílčí obloučky (na každý připadá úbytek 20–30 V)." },
+            { id: 253, cat: "ep_skripta", q: "[EP Kap. 5] K čemu slouží stejnosměrné rychlovypínače a na jakých dvou principech fungují jejich rychlé mechanismy?", a: "Dle kap. 5 (str. 56–62):\n• V DC obvodech (trakce, hliníkárny) narůstá zkratový proud s obrovskou strmostí S = Im / τ na hodnoty 50 až 200 kA. Stejnosměrný rychlovypínač musí rozpoznat zkrat a rozpojit kontakty v době kratší než časová konstanta τ (vlastní doba vypínače Tv ≈ 1 ms), čímž omezí zkratový proud dříve, než dosáhne vrcholové hodnoty.\n• Dva principy rychlých spouštěcích mechanismů:\n  1. Přídržný elektromagnet: má budicí cívku B (držící kotvu proti pružině) a hlavní demagnetizační cívku D; při zkratu tok Φ₂ cívky D vytlačí tok Φ₁ z kotvy a ta okamžitě odpadne.\n  2. Odpalovací transformátor (cívka): primárem teče část hlavního proudu a sekundár tvoří měděný kotouč (závit nakrátko) spojený s kontakty; při prudkém nárůstu zkratového proudu elektrodynamická síla okamžitě odmrští kotouč." },
+            { id: 254, cat: "ep_skripta", q: "[EP Kap. 6] Co jsou zámky a volnoběžky u jističů NN a jak se dělí vzduchové jističe NN podle jmenovitého proudu?", a: "Dle kap. 6.1 a 6.2.3 (str. 63–67, 77–80):\n• Zámky (západky, prolomené páky) a volnoběžky: mechanické ústrojí, které drží kontakty jističe v zapnuté poloze proti tahu vypínací pružiny a při poruše umožní malou silou spouště okamžité vypnutí i v případě, že obsluha drží ovládací páku v poloze zapnuto (tzv. volnoběžné vypnutí při zapnutí do zkratu).\n• Rozdělení vzduchových jističů NN podle In:\n  1. Drobné (instalační) jističe do 25 A (pevně seřízená bimetalová + elmag. spoušť, kovová roštová komora).\n  2. Střední jističe do 600 A (oddělené hlavní a opalovací kontakty, nastavitelné spouště vč. podpěťové).\n  3. Velké jističe nad 600 A (např. 2500 A; paralelní jednotky, motorový pohon, mikroprocesorová spoušť s vybavovacím magnetem – „hrníčkem“)." },
+            { id: 255, cat: "ep_skripta", q: "[EP Kap. 7] Na jakém principu pracují kapalinové vypínače, jak se dělí a jaký je rozdíl mezi axiálním a radiálním zhášedlem?", a: "Dle kap. 7 (str. 81–110):\n• Princip: Vypínače s vlastní zhášecí energií (pro AC). Hořící oblouk tepelně rozkládá kapalinu (olej nebo vodu – expanzin) na plyny a páry (cca 70 % vodíku), které vysokým tlakem v nule proudu rozruší a ochladí zbytkový ionizovaný sloupec.\n• Dělení: 1. kotlové s volným zhášením, 2. kotlové se zhášedly, 3. máloolejové (olej slouží jen ke zhášení, nikoli k izolaci proti zemi), 4. vodní (expanzní), 5. impulsní.\n• Axiální zhášedlo (výbušná komora): plyny proudí podél osy oblouku (vysoké tlaky 10–20 MPa, u malých proudů dlouhé hoření – řeší se dutým roubíkem).\n• Radiální zhášedlo: plyny unikají příčnými štěrbinami kolmo na osu oblouku (nižší tlaky, klidnější chod, více míst přerušení v sérii)." },
+            { id: 256, cat: "ep_skripta", q: "[EP Kap. 8] Jak fungují tlakovzdušné a autopneumatické vypínače, co je zahlcení trysky a k čemu slouží tlumicí odpor a děliče napětí?", a: "Dle kap. 8 (str. 111–141):\n• Tlakovzdušné vypínače (s cizí zhášecí energií): oblouk v axiální trysce je vyfukován stlačeným vzduchem ze zásobníku (tlak 0,5 až 6 MPa). Mají oddělenou funkci zhášecí (v optimální poloze roubíku) a izolační – buď pomocí brzděného roubíku, nebo sériového rozpojovače.\n• Zahlcení trysky: při velkých zkratových proudech ohřátý plyn v trysce expanduje proti tlaku ze vzduchojemu a zatlačí ionizované plyny do přívodu.\n• Paralelní tlumicí odpor R = 0,5·√(L/C): připojuje se mechanicky nebo termoionicky, aby tlumil vysokofrekvenční kmity zotaveného napětí (nad 5000 Hz).\n• Kapacitní a odporové děliče: u vypínačů VVN s více zhášedly v sérii zajišťují rovnoměrné rozdělení zotaveného napětí.\n• Autopneumatické (samotlaké) vypínače: nemají kompresor, vzduch si stlačují samy při vypínání pístem spřaženým s kontakty." },
+            { id: 257, cat: "ep_skripta", q: "[EP Kap. 9] Jak fungují plynotvorné vypínače (s tuhým hasivem) a jaké materiály využívají?", a: "Dle kap. 9 (str. 142–144):\n• Jsou to vypínače s vlastní zhášecí energií, kde hořící oblouk v úzké štěrbině nebo trubce tepelně rozkládá pevnou plynotvornou látku (fíbr, plexisklo – polymetylmetakrylát, dentakryl). Uvolněné plyny v nule proudu rozruší zbytkový sloupec.\n• Mají nejmenší vypínací výkon ze všech výkonových vypínačů (do 22 kV / 200 MVA), protože zplynění pevné látky vyžaduje více energie než u kapaliny a štěrbina se opalem postupně rozšiřuje." },
+            { id: 258, cat: "ep_skripta", q: "[EP Kap. 10] Jaké vlastnosti má elektronegativní plyn SF₆ (fluorid sírový) a jak fungují vypínače a zapouzdřené rozvodny SF₆?", a: "Dle kap. 10 (str. 145–155):\n• Vlastnosti SF₆: umělý elektronegativní plyn s velkou elektronovou afinitou (molekuly SF₆ snadno poutají volné elektrony na těžké záporné ionty, což výrazně urychluje deionizaci). Je nehořlavý, nejedovatý, bezbarvý, 5× těžší než vzduch, má 2,4× vyšší elektrickou pevnost a 1,6–2,5× lepší odvod tepla než vzduch. Má nízkou časovou konstantu oblouku a nevznikají u něj přepětí utržením proudu.\n• Vypínače SF₆: dnes nejrozšířenější v VN a VVN, používají autopneumatické (samotlaké) zhášedlo s pístem a teflonovou tryskou (odolnou vůči HF) nebo rotaci oblouku v mg. poli.\n• Zapouzdřené rozvodny SF₆: uspoří až 90 % stavebního prostoru, jsou nezávislé na znečištění okolí a mají minimální údržbu (nevýhodou jsou vyšší pořizovací náklady)." },
+            { id: 259, cat: "ep_skripta", q: "[EP Kap. 11] Jak funguje vakuový vypínač, co je difúzní vs. vysokotlaký oblouk a proč se používá radiální (RMF) a axiální (AMF) magnetické pole?", a: "Dle kap. 11 (str. 156–178):\n• Ve vakuovém zhášedle (tlak 10⁻³ Pa, pohyb kontaktu přes kovový vlnovec, zdvih jen 2–12 mm) hoří oblouk ve výparech kovu z katodových skvrn (1 skvrna přenáší 100–200 A). V nule střídavého proudu tvorba par ustane, páry za 1 μs zkondenzují na kontaktech a stínicím krytu a pevnost se okamžitě obnoví.\n• Do cca 10 kA má oblouk difúzní charakter (malé napětí, snadné zhášení). Nad 10 kA se plazma stahuje do jednoho místa a vzniká anodová skvrna – oblouk přechází ve vysokotlaký, který by v nule neuhasl.\n• Zábrana vzniku anodové skvrny pomocí tvaru kontaktů:\n  1. Radiální mg. pole (RMF – spirálové kontakty nebo kontakty se šikmými zářezy): uvádí oblouk do rychlé rotace (70–150 m/s) po obvodu kontaktů.\n  2. Axiální mg. pole (AMF – cívky pod kontakty): udržuje oblouk v difúzní formě (rozprostřený po celé ploše) i při velkých zkratových proudech.\n• Nejlepší kontaktní materiál: slinutý CuCr (měď–chrom) a WCAg (omezují svaření i utržení proudu před nulou)." },
+            { id: 260, cat: "ep_skripta", q: "[EP Kap. 12] Definujte základní parametry pojistek: jmenovitý proud In, krajní proud I_KR, předvídaný proud I_PŘ a tavný proud I_TAV.", a: "Dle kap. 12.3 (str. 182–186):\n• Jmenovitý proud (In): proud, který pojistka trvale snese bez překročení dovolené teploty a bez přetavení.\n• Krajní proud (I_KR): proud, při jehož trvalém průtoku se tavná vložka právě ještě nepřetaví (u pojistek NN 1,3 až 1,6·In, u VN 1,3 až 2,0·In).\n• Předvídaný proud (I_PŘ): efektivní hodnota ustáleného zkratového proudu, který by obvodem tekl, kdyby byla pojistka nahrazena vodičem o zanedbatelné impedanci (udává vypínací schopnost pojistky v kA).\n• Tavný proud (I_TAV): skutečná vrcholová hodnota proudu, na kterou pojistka omezí zkratový proud svým přetavením před dosažením maxima půlvlny." },
+            { id: 261, cat: "ep_skripta", q: "[EP Kap. 13.1] Co je to přepětí, jak se dělí a proč se na konci otevřeného vedení nebo před transformátorem přepěťová vlna zdvojnásobí?", a: "Dle kap. 13.1 (str. 196–199):\n• Přepětí je jakékoliv napětí vyšší než nejvyšší provozovací napětí soustavy.\n• Dělení: krátkodobá (rázová) a dlouhodobá (trvalá); podle původu vnější (atmosférická – úder blesku, zkušební vlna 1,2/50 μs) a vnitřní (spínací a dynamická).\n• Odraz vlny: Každé vedení má vlnovou impedanci Zv = √(L/C) (kabely ~50 Ω, venkovní vedení 330–500 Ω, vinutí transformátoru ~5000 Ω). Při dopadu postupné přepěťové vlny na otevřený konec vedení nebo na vinutí transformátoru (s 10× vyšší vlnovou impedancí) dochází k odrazu vlny a náboj nabíjí koncovou kapacitu až na DVOJNÁSOBEK vrcholového napětí původní vlny (2·U). Proto se před transformátory instalují svodiče přepětí (bleskojistky)." },
+            { id: 262, cat: "ep_skripta", q: "[EP Kap. 13.2] Vyjmenujte 5 zařízení na ochranu proti přepětí a vysvětlete princip trubkové a ventilové bleskojistky.", a: "Dle kap. 13.2 (str. 199–215):\nPět zařízení na ochranu proti přepětí:\n1. Zemní lana nad fázovými vodiči (chrání proti přímému úderu blesku přímo u zrodu).\n2. Ochranné (koordinační) jiskřiště (tyčová elektroda u průchodky; po průrazu však neodpojí následný zkratový proud).\n3. Trubková bleskojistka (Torokova trubice): jiskřiště v trubce z plynotvorné hmoty + vnější jiskřiště; oblouk rozloží hmotu na plyny a v nule proudu sám uhasne.\n4. Ventilová bleskojistka: skládá se ze soustavy dílčích jiskřišť (s předionizací slídou nebo rutilem εr=80) v sérii s napěťově závislými nelineárními odpory z karbidu křemíku (SiC). Při přepětí (UZ) jiskřiště přeskočí, odpor SiC prudce klesne a svede výbojový proud do země (omezí napětí na zbytkové UZBm). Po odeznění přepětí odpor SiC opět silně vzroste, omezí následný síťový proud INS na desítky A a jiskřiště jej v první nule proudu zhasne.\n5. Kondenzátory a kondenzátorové bleskojistky." }
+        ];
+
+        // ============================================================================
+        // APPLICATION STATE & STORAGE
+        // ============================================================================
+        const STORAGE_KEY = 'vsb_el_stroje_flashcards_v1';
+        let progress = {};
+        let selectedCategory = 'all';
+        let statusFilter = 'all'; // 'all', 'not_known', 'learning', 'known'
+        let starFilterOnly = false;
+        let searchQuery = '';
+        let currentMode = 'flashcards'; // 'flashcards', 'list', 'quiz'
+
+        let filteredDeck = [];
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        let currentQuizQuestion = null;
+        let quizScoreCorrect = 0;
+        let quizScoreTotal = 0;
+
+        function initApp() {
+            // Přiřazení sloučených kategorií všem otázkám
+            QUESTIONS.forEach(card => {
+                card.cat = getConsolidatedCategory(card);
+            });
+            loadProgress();
+            renderCategories();
+            applyFilters();
+            setupKeyboardShortcuts();
+        }
+
+        function loadProgress() {
+            let localData = {};
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) localData = JSON.parse(raw);
+            } catch (e) {
+                console.warn('Chyba čtení LocalStorage:', e);
+            }
+            // Sloučení postupu v kódu (GitHub) s postupem v prohlížeči
+            progress = { ...GITHUB_SAVED_PROGRESS, ...localData };
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            } catch (e) {
+                console.warn('Chyba zápisu do LocalStorage:', e);
+            }
+            updateStatsUI();
+            renderCategories();
+        }
+
+        function getCardStatus(id) {
+            return (progress[id] && progress[id].status) ? progress[id].status : 'unseen';
+        }
+
+        function isCardStarred(id) {
+            return !!(progress[id] && progress[id].starred);
+        }
+
+        function applyFilters(keepPosition = false) {
+            const qLower = searchQuery.trim().toLowerCase();
+
+            filteredDeck = QUESTIONS.filter(card => {
+                // 1. Kategorie
+                if (selectedCategory !== 'all' && card.cat !== selectedCategory) return false;
+
+                // 2. Hvězdičky
+                if (starFilterOnly && !isCardStarred(card.id)) return false;
+
+                // 3. Stav znalostí
+                const st = getCardStatus(card.id);
+                if (statusFilter === 'known' && st !== 'known') return false;
+                if (statusFilter === 'learning' && st !== 'learning') return false;
+                if (statusFilter === 'not_known' && st === 'known') return false;
+
+                // 4. Vyhledávání
+                if (qLower) {
+                    const idMatch = String(card.id) === qLower || (`t${card.id - 208}`) === qLower || (`p${card.id - 195}`) === qLower;
+                    const textMatch = card.q.toLowerCase().includes(qLower) || card.a.toLowerCase().includes(qLower);
+                    if (!idMatch && !textMatch) return false;
+                }
+
+                return true;
+            });
+
+            if (!keepPosition) {
+                currentIndex = 0;
+                isFlipped = false;
+            } else if (currentIndex >= filteredDeck.length) {
+                currentIndex = 0;
+            }
+
+            updateStatsUI();
+            renderCurrentView();
+        }
+
+        function renderCurrentView() {
+            if (currentMode === 'flashcards') {
+                renderFlashcard();
+            } else if (currentMode === 'list') {
+                renderListView();
+            } else if (currentMode === 'quiz') {
+                generateQuizQuestion();
+            }
+        }
+
+        function updateStatsUI() {
+            let known = 0, learning = 0, unseen = 0, starred = 0;
+            QUESTIONS.forEach(q => {
+                const st = getCardStatus(q.id);
+                if (st === 'known') known++;
+                else if (st === 'learning') learning++;
+                else unseen++;
+                if (isCardStarred(q.id)) starred++;
+            });
+
+            const total = QUESTIONS.length;
+            document.getElementById('stat-known-text').textContent = `Umím: ${known} (${Math.round(known/total*100)}%)`;
+            document.getElementById('stat-learning-text').textContent = `Neumím: ${learning}`;
+            document.getElementById('stat-unseen-text').textContent = `Neprojité: ${unseen}`;
+
+            document.getElementById('bar-known').style.width = `${(known / total) * 100}%`;
+            document.getElementById('bar-learning').style.width = `${(learning / total) * 100}%`;
+
+            document.getElementById('count-all').textContent = total;
+            document.getElementById('count-not_known').textContent = learning + unseen;
+            document.getElementById('count-learning').textContent = learning;
+            document.getElementById('count-known').textContent = known;
+            document.getElementById('count-starred').textContent = starred;
+
+            // Update Exam Photos badge
+            const examQuestions = QUESTIONS.filter(q => q.cat === 'test_foto');
+            const examKnown = examQuestions.filter(q => getCardStatus(q.id) === 'known').length;
+            const examBadge = document.getElementById('exam-known-badge');
+            if (examBadge) {
+                examBadge.textContent = `${examKnown}/${examQuestions.length} Umím`;
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('category-list');
+            container.innerHTML = '';
+
+            CATEGORIES.forEach(cat => {
+                const catQuestions = QUESTIONS.filter(q => q.cat === cat.id);
+                const knownCount = catQuestions.filter(q => getCardStatus(q.id) === 'known').length;
+                const totalCat = catQuestions.length;
+                const pct = totalCat > 0 ? Math.round((knownCount / totalCat) * 100) : 0;
+                const isSelected = selectedCategory === cat.id;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => selectCategory(cat.id);
+                btn.className = `w-full text-left p-2.5 rounded-xl border transition flex flex-col gap-1.5 ${
+                    isSelected 
+                    ? (cat.highlight ? 'bg-rose-600/20 border-rose-500 text-white shadow' : 'bg-blue-600/15 border-blue-500 text-white') 
+                    : (cat.highlight ? 'bg-rose-950/30 border-rose-500/40 hover:border-rose-400 text-rose-200' : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 text-slate-300')
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-medium truncate">${cat.title}</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 shrink-0">${knownCount}/${totalCat}</span>
+                    </div>
+                    <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500 transition-all" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function getCardDisplayId(card) {
+            if (card.cat === 'test_foto') return `Test z fotky #${card.id - 208}`;
+            if (card.cat === 'ep_skripta') return `El. přístroje #${card.id - 244}`;
+            if (card.id > 195) return `Příklad #${card.id - 195}`;
+            return `Otázka #${card.id}`;
+        }
+
+        function renderFlashcard() {
+            const inner = document.getElementById('flashcard-inner');
+            if (isFlipped) inner.classList.add('rotate-y-180');
+            else inner.classList.remove('rotate-y-180');
+
+            if (filteredDeck.length === 0) {
+                document.getElementById('card-position-text').textContent = 'Žádné otázky neodpovídají filtru';
+                document.getElementById('card-front-cat').textContent = 'Prázdný výběr';
+                document.getElementById('card-front-id').textContent = '-';
+                document.getElementById('card-front-question').textContent = '🎉 V této kategorii a filtru nemáš žádné další otázky! Změň filtr vlevo.';
+                document.getElementById('card-back-answer').textContent = 'Změň filtr v levém sloupci pro zobrazení dalších otázek.';
+                return;
+            }
+
+            const card = filteredDeck[currentIndex];
+            const catObj = CATEGORIES.find(c => c.id === card.cat);
+            const st = getCardStatus(card.id);
+            const starred = isCardStarred(card.id);
+
+            document.getElementById('card-position-text').textContent = `Karta ${currentIndex + 1} z ${filteredDeck.length}`;
+            document.getElementById('card-front-cat').textContent = catObj ? catObj.title : '';
+            
+            const labelId = getCardDisplayId(card);
+            document.getElementById('card-front-id').textContent = labelId;
+            document.getElementById('card-back-id').textContent = labelId;
+
+            document.getElementById('card-front-question').textContent = card.q;
+            document.getElementById('card-back-answer').textContent = card.a;
+
+            // Status badge
+            const badge = document.getElementById('current-card-badge');
+            if (st === 'known') {
+                badge.textContent = '✅ Umím';
+                badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            } else if (st === 'learning') {
+                badge.textContent = '❌ Neumím';
+                badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            } else {
+                badge.textContent = 'Neprojito';
+                badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-slate-800 text-slate-400';
+            }
+
+            // Star button
+            const starBtn = document.getElementById('current-star-btn');
+            if (starred) {
+                starBtn.className = 'text-lg leading-none text-yellow-400 transition';
+            } else {
+                starBtn.className = 'text-lg leading-none text-slate-600 hover:text-yellow-400 transition';
+            }
+        }
+
+        function renderListView() {
+            const container = document.getElementById('view-list');
+            container.innerHTML = '';
+
+            if (filteredDeck.length === 0) {
+                container.innerHTML = `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400">Žádné otázky neodpovídají vybranému filtru.</div>`;
+                return;
+            }
+
+            filteredDeck.forEach(card => {
+                const st = getCardStatus(card.id);
+                const starred = isCardStarred(card.id);
+                const catObj = CATEGORIES.find(c => c.id === card.cat);
+                const labelId = getCardDisplayId(card);
+
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 transition hover:border-slate-700';
+                item.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-blue-400">${labelId}</span>
+                            <span class="text-xs text-slate-400">${catObj ? catObj.title : ''}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="setCardStatusFromList(${card.id}, 'learning')" class="px-2.5 py-1 rounded-lg text-xs font-medium border transition ${st === 'learning' ? 'bg-amber-500/20 border-amber-500 text-amber-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}">❌ Neumím</button>
+                            <button onclick="setCardStatusFromList(${card.id}, 'known')" class="px-2.5 py-1 rounded-lg text-xs font-medium border transition ${st === 'known' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}">✅ Umím</button>
+                            <button onclick="toggleStarFromList(${card.id})" class="px-2 py-1 text-base leading-none ${starred ? 'text-yellow-400' : 'text-slate-600 hover:text-yellow-400'}">★</button>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-white text-base">${card.q}</h4>
+                    <div class="text-sm text-slate-300 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800/80 whitespace-pre-line leading-relaxed">${card.a}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // ============================================================================
+        // INTERACTIVE ACTIONS
+        // ============================================================================
+        function flipCard() {
+            if (filteredDeck.length === 0) return;
+            isFlipped = !isFlipped;
+            renderFlashcard();
+        }
+
+        function nextCard() {
+            if (filteredDeck.length === 0) return;
+            isFlipped = false;
+            currentIndex = (currentIndex + 1) % filteredDeck.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            if (filteredDeck.length === 0) return;
+            isFlipped = false;
+            currentIndex = (currentIndex - 1 + filteredDeck.length) % filteredDeck.length;
+            renderFlashcard();
+        }
+
+        function markCurrentCard(status) {
+            if (filteredDeck.length === 0) return;
+            const card = filteredDeck[currentIndex];
+            if (!progress[card.id]) progress[card.id] = {};
+            progress[card.id].status = status;
+            saveProgress();
+
+            // If current filter hides the card after marking (e.g. marking 'known' while in 'not_known' filter)
+            const prevLen = filteredDeck.length;
+            applyFilters(true);
+            if (filteredDeck.length === prevLen) {
+                nextCard();
+            } else {
+                if (currentIndex >= filteredDeck.length) currentIndex = 0;
+                renderFlashcard();
+            }
+        }
+
+        function toggleCurrentStar() {
+            if (filteredDeck.length === 0) return;
+            const card = filteredDeck[currentIndex];
+            if (!progress[card.id]) progress[card.id] = {};
+            progress[card.id].starred = !progress[card.id].starred;
+            saveProgress();
+            renderFlashcard();
+        }
+
+        function setCardStatusFromList(id, status) {
+            if (!progress[id]) progress[id] = {};
+            progress[id].status = progress[id].status === status ? 'unseen' : status;
+            saveProgress();
+            applyFilters(true);
+        }
+
+        function toggleStarFromList(id) {
+            if (!progress[id]) progress[id] = {};
+            progress[id].starred = !progress[id].starred;
+            saveProgress();
+            applyFilters(true);
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            ['flashcards', 'list', 'quiz'].forEach(m => {
+                const btn = document.getElementById(`mode-${m}`);
+                const view = document.getElementById(`view-${m}`);
+                if (m === mode) {
+                    btn.className = 'py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 bg-blue-600 text-white shadow';
+                    view.classList.remove('hidden');
+                } else {
+                    btn.className = 'py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white';
+                    view.classList.add('hidden');
+                }
+            });
+            renderCurrentView();
+        }
+
+        function setStatusFilter(filter) {
+            statusFilter = filter;
+            ['all', 'not_known', 'learning', 'known'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    btn.classList.add('border-blue-500', 'bg-blue-500/10');
+                    btn.classList.remove('border-slate-800', 'bg-slate-800/50');
+                } else {
+                    btn.classList.remove('border-blue-500', 'bg-blue-500/10');
+                    btn.classList.add('border-slate-800', 'bg-slate-800/50');
+                }
+            });
+            applyFilters();
+        }
+
+        function toggleStarFilter() {
+            starFilterOnly = !starFilterOnly;
+            const btn = document.getElementById('filter-starred');
+            if (starFilterOnly) {
+                btn.classList.add('border-yellow-500', 'bg-yellow-500/10');
+                btn.classList.remove('border-slate-800', 'bg-slate-800/50');
+            } else {
+                btn.classList.remove('border-yellow-500', 'bg-yellow-500/10');
+                btn.classList.add('border-slate-800', 'bg-slate-800/50');
+            }
+            applyFilters();
+        }
+
+        function selectCategory(catId) {
+            selectedCategory = catId;
+            renderCategories();
+            applyFilters();
+        }
+
+        function activateExamPhotosDeck() {
+            selectedCategory = 'test_foto';
+            statusFilter = 'all';
+            starFilterOnly = false;
+            searchQuery = '';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+            setStatusFilter('all');
+            const starBtn = document.getElementById('filter-starred');
+            if (starBtn) {
+                starBtn.classList.remove('border-yellow-500', 'bg-yellow-500/10');
+                starBtn.classList.add('border-slate-800', 'bg-slate-800/50');
+            }
+            setMode('flashcards');
+            renderCategories();
+            applyFilters();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            applyFilters();
+        }
+
+        function shuffleDeck() {
+            for (let i = filteredDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [filteredDeck[i], filteredDeck[j]] = [filteredDeck[j], filteredDeck[i]];
+            }
+            currentIndex = 0;
+            isFlipped = false;
+            renderCurrentView();
+        }
+
+        function resetDeckOrder() {
+            filteredDeck.sort((a, b) => a.id - b.id);
+            currentIndex = 0;
+            isFlipped = false;
+            renderCurrentView();
+        }
+
+        // ============================================================================
+        // QUIZ ENGINE
+        // ============================================================================
+        function generateQuizQuestion() {
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.add('hidden');
+
+            const pool = filteredDeck.length >= 4 ? filteredDeck : QUESTIONS;
+            const randomIdx = Math.floor(Math.random() * pool.length);
+            currentQuizQuestion = pool[randomIdx];
+
+            document.getElementById('quiz-q-id').textContent = `Otázka #${currentQuizQuestion.id}`;
+            document.getElementById('quiz-question-text').textContent = currentQuizQuestion.q;
+
+            // Pick 3 distractors preferably from same or nearby category
+            const distractors = QUESTIONS
+                .filter(q => q.id !== currentQuizQuestion.id)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
+
+            const options = [currentQuizQuestion, ...distractors].sort(() => 0.5 - Math.random());
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-4 rounded-2xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 text-sm text-slate-200 transition flex items-start gap-3';
+                btn.onclick = () => checkQuizAnswer(opt.id, btn);
+                btn.innerHTML = `
+                    <span class="font-mono text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 mt-0.5">${idx + 1}</span>
+                    <span class="flex-1 whitespace-pre-line">${opt.a}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedId, btnElement) {
+            const optionsContainer = document.getElementById('quiz-options');
+            Array.from(optionsContainer.children).forEach(b => b.disabled = true);
+
+            quizScoreTotal++;
+            const isCorrect = selectedId === currentQuizQuestion.id;
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                quizScoreCorrect++;
+                btnElement.classList.replace('border-slate-800', 'border-emerald-500');
+                btnElement.classList.add('bg-emerald-500/10');
+                feedback.className = 'p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm';
+                feedback.innerHTML = `<strong>✅ Správně!</strong> Otázka byla automaticky označena jako „Umím“.`;
+                if (!progress[currentQuizQuestion.id]) progress[currentQuizQuestion.id] = {};
+                progress[currentQuizQuestion.id].status = 'known';
+            } else {
+                btnElement.classList.replace('border-slate-800', 'border-rose-500');
+                btnElement.classList.add('bg-rose-500/10');
+                feedback.className = 'p-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-rose-200 text-sm space-y-1';
+                feedback.innerHTML = `<strong>❌ Chyba!</strong> Otázka byla označena jako „Neumím“.<br><span class="text-xs text-slate-300">Správná odpověď: ${currentQuizQuestion.a}</span>`;
+                if (!progress[currentQuizQuestion.id]) progress[currentQuizQuestion.id] = {};
+                progress[currentQuizQuestion.id].status = 'learning';
+            }
+
+            saveProgress();
+            document.getElementById('quiz-score').textContent = `${quizScoreCorrect} / ${quizScoreTotal}`;
+        }
+
+        // ============================================================================
+        // GITHUB & JSON BACKUP FUNCTIONS
+        // ============================================================================
+        function openSyncModal() {
+            const codeString = `const GITHUB_SAVED_PROGRESS = ${JSON.stringify(progress)};`;
+            document.getElementById('hardcode-export-box').value = codeString;
+            document.getElementById('sync-modal').classList.remove('hidden');
+        }
+
+        function closeSyncModal() {
+            document.getElementById('sync-modal').classList.add('hidden');
+        }
+
+        function openFormulaModal() {
+            document.getElementById('formula-modal').classList.remove('hidden');
+        }
+
+        function closeFormulaModal() {
+            document.getElementById('formula-modal').classList.add('hidden');
+        }
+
+        function copyHardcodeProgress() {
+            const box = document.getElementById('hardcode-export-box');
+            box.select();
+            document.execCommand('copy');
+            const btn = event?.target;
+            if (btn) {
+                const orig = btn.textContent;
+                btn.textContent = '✅ Zkopírováno!';
+                setTimeout(() => btn.textContent = orig, 2000);
+            }
+        }
+
+        function exportProgressJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(progress, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `elektricke_stroje_progress_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function importProgressJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    progress = { ...progress, ...imported };
+                    saveProgress();
+                    applyFilters(true);
+                    openSyncModal();
+                } catch (err) {
+                    console.error('Chyba: Neplatný JSON soubor.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAllProgress() {
+            progress = {};
+            localStorage.removeItem(STORAGE_KEY);
+            updateStatsUI();
+            renderCategories();
+            applyFilters();
+            closeSyncModal();
+        }
+
+        // ============================================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================================
+        function setupKeyboardShortcuts() {
+            window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                if (currentMode !== 'flashcards') return;
+
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    flipCard();
+                } else if (e.code === 'ArrowRight') {
+                    e.preventDefault();
+                    nextCard();
+                } else if (e.code === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevCard();
+                } else if (e.key === '1') {
+                    e.preventDefault();
+                    markCurrentCard('learning');
+                } else if (e.key === '2') {
+                    e.preventDefault();
+                    markCurrentCard('known');
+                } else if (e.key.toLowerCase() === 's') {
+                    e.preventDefault();
+                    toggleCurrentStar();
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
